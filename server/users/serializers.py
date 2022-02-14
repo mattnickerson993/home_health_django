@@ -3,8 +3,9 @@ from django.contrib.auth.models import Group
 
 from rest_framework import serializers
 
+USER = get_user_model()
 
-class GroupSerializer(serializers.ModelSerializer):    
+class GroupSerializer(serializers.ModelSerializer):
     class Meta:
         model = Group
         fields = ('name',)
@@ -22,7 +23,7 @@ class UserSerializer(serializers.ModelSerializer):
 
     def create(self, validated_data):
         group_list = validated_data.pop('groups')
-        groups = [Group.objects.get_or_create(name = group['name'].lower())[0] for group in group_list]
+        groups = [Group.objects.get_or_create(name=group['name'].lower())[0] for group in group_list]
         data = {
             key: value for key, value in validated_data.items()
             if key not in ('password1', 'password2')
@@ -33,7 +34,7 @@ class UserSerializer(serializers.ModelSerializer):
         return user
 
     class Meta:
-        model = get_user_model()
+        model = USER
         fields = (
             'id', 'email', 'password1', 'password2',
             'first_name', 'last_name', 'groups'
