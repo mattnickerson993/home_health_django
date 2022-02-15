@@ -5,10 +5,16 @@ from rest_framework import serializers
 
 USER = get_user_model()
 
+
 class GroupSerializer(serializers.ModelSerializer):
     class Meta:
         model = Group
         fields = ('name',)
+        # overrides unique constraint in nested serializer
+        # https://medium.com/django-rest-framework/dealing-with-unique-constraints-in-nested-serializers-dade33b831d9
+        extra_kwargs = {
+            'name': {'validators': []},
+        }
 
 
 class UserSerializer(serializers.ModelSerializer):
@@ -23,6 +29,7 @@ class UserSerializer(serializers.ModelSerializer):
 
     def create(self, validated_data):
         group_list = validated_data.pop('groups')
+        ('im trying to create')
         groups = [Group.objects.get_or_create(name=group['name'].lower())[0] for group in group_list]
         data = {
             key: value for key, value in validated_data.items()
@@ -39,4 +46,4 @@ class UserSerializer(serializers.ModelSerializer):
             'id', 'email', 'password1', 'password2',
             'first_name', 'last_name', 'groups'
         )
-        read_only_fields = ('id',)
+        read_only_fields = ('id', 'groups')

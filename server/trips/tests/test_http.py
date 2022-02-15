@@ -48,8 +48,8 @@ class AuthenticationTest(APITestCase):
 
     def test_user_can_log_in(self):
         user = create_test_user(**default_user_create_data)
-        group, _ = Group.objects.get_or_create(name='patient')
-        user.groups.add(group)
+        # group, _ = Group.objects.get_or_create(name='patient')
+        # user.groups.add(group)
         response = self.client.post(reverse('auth:log_in'), data={
             'email': user.email,
             'password': PASSWORD
