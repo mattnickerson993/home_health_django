@@ -161,9 +161,11 @@ REST_FRAMEWORK = {
 
 SIMPLE_JWT = {
     # base settings
-    'ACCESS_TOKEN_LIFETIME': datetime.timedelta(minutes=60),
+    'ACCESS_TOKEN_LIFETIME': datetime.timedelta(minutes=5),
     'REFRESH_TOKEN_LIFETIME': datetime.timedelta(days=1),
+    # from database (should be a field that doesnt change)
     'USER_ID_FIELD': 'id',
+    # identifier stored in token
     'USER_ID_CLAIM': 'id',
 
     # explicit
@@ -175,10 +177,11 @@ SIMPLE_JWT = {
     'JWK_URL': None,
     'LEEWAY': 0,
 
-    # more settings
-    'ROTATE_REFRESH_TOKENS': True,
-    'BLACKLIST_AFTER_ROTATION': True,
+    # blacklist/generate new refresh tokens on refresh
+    'ROTATE_REFRESH_TOKENS': False,
+    'BLACKLIST_AFTER_ROTATION': False,
     'UPDATE_LAST_LOGIN': True,
     'AUTH_HEADER_TYPES': ('Bearer', 'JWT',),
+    # will accepy Authorizatio in header
     'AUTH_HEADER_NAME': 'HTTP_AUTHORIZATION',
 }
