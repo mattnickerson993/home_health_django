@@ -1,5 +1,7 @@
-from django.urls import path
+from django.urls import path, include
 
 app_name = 'api_v1'
 
-urlpatterns = []
+urlpatterns = [
+    path('trips/', include('trips.urls', namespace='trips')),
+]

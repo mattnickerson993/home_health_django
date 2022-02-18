@@ -40,6 +40,10 @@ class Trip(models.Model):
     current_location = models.CharField(blank=True, null=True, max_length=255)
     start_location = models.CharField(blank=True, null=True, max_length=255)
     destination = models.CharField(blank=True, null=True, max_length=255)
+    # records
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+    canceled_at = models.DateTimeField(blank=True, null=True)
 
     def __str__(self):
         return f"{self.id}"
