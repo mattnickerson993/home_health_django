@@ -9,8 +9,9 @@ from trips.consumers import TripConsumer
 
 application = ProtocolTypeRouter({
     'http': get_asgi_application(),
-    'websocket': TokenAuthMiddlewareStack(URLRouter([
-        path('home_health/', TripConsumer.as_asgi())
-    ])
+    'websocket': TokenAuthMiddlewareStack(
+        URLRouter([
+            path('home_health/', TripConsumer.as_asgi()),
+        ])
     ),
 })
