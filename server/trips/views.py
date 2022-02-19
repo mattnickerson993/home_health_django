@@ -13,7 +13,7 @@ class TripListView(generics.ListAPIView):
         return Trip.objects.all()
 
 
-class TripCreateView(generics.ListAPIView):
+class TripCreateView(generics.CreateAPIView):
     permission_classes = [permissions.IsAuthenticated]
     serializer_class = TripCreateSerializer
 
