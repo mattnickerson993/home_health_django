@@ -22,6 +22,7 @@ default_user_request_data = {
     'groups': [{'name': 'patient'}]
 }
 
+
 default_user_create_data = {
     'email': 'test_email1@email.com',
     'first_name': 'test_first1',
@@ -29,9 +30,17 @@ default_user_create_data = {
     'password': PASSWORD,
 }
 
+default_user_two_create_data = {
+    'email': 'test_email2@email.com',
+    'first_name': 'test_first2',
+    'last_name': 'test_last2',
+    'password': PASSWORD,
+}
+
 
 def create_test_user(**kwargs):
     return USER.objects.create_user(**kwargs)
+
 
 class Http_Trip_Testing(APITestCase):
 
@@ -44,12 +53,29 @@ class Http_Trip_Testing(APITestCase):
 
         self.access = response.data['access']
 
-    # def create_trip(self):
-    #     Trip.objects.
+    def setUp(self):
+        self.trips = []
+        self.logIn()
+        # create second user
+        create_test_user(**default_user_two_create_data)
+        self.create_trip()
 
-    # def setUp(self):
-    #     self.logIn()
+    def create_trip(self):
+        self.trip_one = Trip.objects.create(
+            patient_id=1,
+            driver_id=2,
+            current_location='8109 Oak Crest Lane',
+            destination='11662 Captain Rhett lane'
+        )
+        self.trips.append(self.trip_one)
 
-    
-    # def test_list_trips(self):
-         
+    def test_list_trips(self):
+        response = self.client.get(reverse('api_v1:trips:trips_list'),
+            HTTP_AUTHORIZATION=f'JWT {self.access}'
+        )
+        data = response.data
+        
+        self.assertEqual(status.HTTP_200_OK, response.status_code)
+        expected_ids = [str(trip.id) for trip in self.trips]
+        returned_ids = [str(trip.get('id')) for trip in data]
+        self.assertEqual(expected_ids, returned_ids)
