@@ -22,7 +22,7 @@ default_user_request_data = {
     'groups': [{'name': 'patient'}]
 }
 
-
+;
 default_user_create_data = {
     'email': 'test_email1@email.com',
     'first_name': 'test_first1',
