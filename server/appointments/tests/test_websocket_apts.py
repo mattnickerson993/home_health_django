@@ -1,6 +1,7 @@
 from datetime import datetime, timedelta
 import json
 from urllib import response
+from django.conf import settings
 import pytest
 
 from django.core.serializers.json import DjangoJSONEncoder
@@ -11,6 +12,7 @@ from channels.db import database_sync_to_async
 from channels.layers import get_channel_layer
 from channels.testing import WebsocketCommunicator
 from rest_framework_simplejwt.tokens import AccessToken
+from appointments.models import Appointment
 from config.middleware import User
 
 from config.routing import application
@@ -50,11 +52,22 @@ def create_user(group, **kwargs):
     access = AccessToken.for_user(user)
     return user, access
 
+
+@database_sync_to_async
+def create_appt(clinician, patient):
+    return Appointment.objects.create(
+        clinician_id=clinician.id,
+        patient_id=patient.id,
+        start_time=datetime.now() + timedelta(days=7),
+        length=60,
+    )
+
 # mark sets metadata on all test methods in test class
 # also treat tests as coroutines
 @pytest.mark.asyncio
 @pytest.mark.django_db(transaction=True)
 class TestWebSocket:
+    
     async def test_schedule_appointment(self, settings):
         settings.CHANNEL_LAYERS = TEST_CHANNEL_LAYERS
         patient, access = await create_user('patient', **default_patient_create_data)
@@ -64,17 +77,18 @@ class TestWebSocket:
             application=application,
             path=f'/home_health/appointments/?token={access}'
         )
+        # account for correct django datetime fmt
         data = json.dumps({
             'clinician': str(clinician.id),
             'patient': str(patient.id),
             'start_time': datetime.now() + timedelta(days=7),
             'length': 60,
         }, cls=DjangoJSONEncoder)
-        print(json.loads(data))
+        
         connected, _ = await communicator.connect()
         await communicator.send_json_to({
             'type': 'schedule.appointment',
-            'data': json.loads(data),
+            'data': json.loads(data), #back to dictionary (dumb)
         })
         response = await communicator.receive_json_from()
         response_data = response.get('data')
@@ -83,4 +97,77 @@ class TestWebSocket:
         assert response_data['patient']['email'] == default_patient_create_data['email']
         assert response_data['status'] == 'REQUESTED'
    
+        await communicator.disconnect()
+
+    
+    async def test_clinician_alerted_on_appt_schedule(self, settings):
+        settings.CHANNEL_LAYERS = TEST_CHANNEL_LAYERS
+        patient, access = await create_user('patient', **default_patient_create_data)
+        clinician, _  = await create_user('clinician', **default_clinician_create_data)
+
+        # connect to test channel as clinician to receive broadcast msg
+        channel_layer = get_channel_layer()
+        await channel_layer.group_add(
+            group='clinicians',
+            channel='test_channel'
+        )
+        
+        # schedule appointment as patient
+        communicator = WebsocketCommunicator(
+            application=application,
+            path=f'/home_health/appointments/?token={access}'
+        )
+        # account for correct django datetime fmt
+        data = json.dumps({
+            'clinician': str(clinician.id),
+            'patient': str(patient.id),
+            'start_time': datetime.now() + timedelta(days=7),
+            'length': 60,
+        }, cls=DjangoJSONEncoder)
+        
+        connected, _ = await communicator.connect()
+        await communicator.send_json_to({
+            'type': 'schedule.appointment',
+            'data': json.loads(data), #back to dictionary (dumb)
+        })
+
+        # monitor for broadcast message as clinician
+        response = await channel_layer.receive('test_channel')
+        response_data = response.get('data')
+
+        assert response_data['id'] is not None
+        assert response_data['clinician']['email'] == default_clinician_create_data['email']
+        assert response_data['patient']['email'] == default_patient_create_data['email']
+        assert response_data['status'] == 'REQUESTED'
+
+        await communicator.disconnect()
+
+
+    async def test_create_appt_group(self, settings):
+
+        # create appt
+        settings.CHANNEL_LAYERS = TEST_CHANNEL_LAYERS
+        patient, access = await create_user('patient', **default_patient_create_data)
+        clinician, _ = await create_user('clinician', **default_clinician_create_data)
+        appt = await create_appt(clinician, patient)
+        # patient and clinician now automatically subscribed to appointment groups by appt_id
+
+        communicator = WebsocketCommunicator(
+            application=application,
+            path=f'/home_health/appointments/?token={access}'
+        )
+        connected, _ = await communicator.connect()
+
+        message = {
+            'type': 'echo.message',
+            'data': 'This is a test message.',
+        }
+
+        # appt group logic
+        channel_layer = get_channel_layer()
+        await channel_layer.group_send(f'{appt.id}', message=message)
+
+        resp = await communicator.receive_json_from()
+        assert resp == message
+
         await communicator.disconnect()
