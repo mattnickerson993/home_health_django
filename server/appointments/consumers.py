@@ -1,7 +1,11 @@
+from django.shortcuts import get_object_or_404
+
 from channels.db import database_sync_to_async
 from channels.generic.websocket import AsyncJsonWebsocketConsumer
 
-from .serializers import AppointmentCreateSerializer, NestedAppointmentSerializer
+from appointments.models import Appointment
+
+from .serializers import AppointmentCreateSerializer, AppointmentUpdateSerializer, NestedAppointmentSerializer
 
 class AppointmentConsumer(AsyncJsonWebsocketConsumer):
 
@@ -12,8 +16,15 @@ class AppointmentConsumer(AsyncJsonWebsocketConsumer):
         return serializer.create(serializer.validated_data)
 
     @database_sync_to_async
-    def _get_appointment_data(self, trip):
-        return NestedAppointmentSerializer(trip).data
+    def _get_appointment_data(self, appt):
+        return NestedAppointmentSerializer(appt).data
+
+    @database_sync_to_async
+    def _update_appointment(self, data):
+        appt = get_object_or_404(Appointment, pk=data.get('id'))
+        serializer = AppointmentUpdateSerializer(data=data)
+        serializer.is_valid(raise_exception=True)
+        return serializer.update(appt, serializer.validated_data)
 
     @database_sync_to_async
     def _get_user_group(self, user):
@@ -34,6 +45,7 @@ class AppointmentConsumer(AsyncJsonWebsocketConsumer):
         if user.is_anonymous:
             await self.close()
         else:
+            # adding user to appropriate socket groups
             group = await self._get_user_group(user)
             if group:
                 await self.channel_layer.group_add(
@@ -50,6 +62,7 @@ class AppointmentConsumer(AsyncJsonWebsocketConsumer):
     async def schedule_appointment(self, content, **kwargs):
         data = content.get('data')
         appt = await self._create_appointment(data)
+        # serializer returns all appt data
         appt_data = await self._get_appointment_data(appt)
 
         await self.channel_layer.group_send(group='clinicians', message={
@@ -60,6 +73,24 @@ class AppointmentConsumer(AsyncJsonWebsocketConsumer):
         await self.send_json({
             'type': 'echo.message',
             'data': appt_data,
+        })
+
+    async def update_appointment(self, content, **kwargs):
+        data = content.get('data')
+        updated_appt = await self._update_appointment(data)
+        appt_data = await self._get_appointment_data(updated_appt)
+
+        await self.channel_layer.group_send(
+            group=f'{updated_appt.id}',
+            message={
+                'type': 'echo.message',
+                'data': appt_data
+            }
+        )
+
+        await self.send_json({
+            'type': 'echo.message',
+            'data': appt_data
         })
 
     async def disconnect(self, code):
@@ -79,14 +110,15 @@ class AppointmentConsumer(AsyncJsonWebsocketConsumer):
                     channel=self.channel_name
                 )
         await super().disconnect(code)
-
+    
     async def echo_message(self, message):
-        
         await self.send_json(message)
 
     async def receive_json(self, content, **kwargs):
         message_type = content.get('type')
         if message_type == 'schedule.appointment':
             await self.schedule_appointment(content)
+        elif message_type == 'update.appointment':
+            await self.update_appointment(content)
         elif message_type == 'echo.message':
             await self.echo_message(content)

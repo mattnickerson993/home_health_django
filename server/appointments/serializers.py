@@ -28,3 +28,21 @@ class NestedAppointmentSerializer(serializers.ModelSerializer):
     class Meta:
         model = Appointment
         fields = '__all__'
+
+
+class AppointmentDetailSerializer(serializers.ModelSerializer):
+
+    clinician = UserSerializer()
+    patient = UserSerializer()
+
+    class Meta:
+        model = Appointment
+        fields = '__all__'
+        depth = 1
+
+
+class AppointmentUpdateSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = Appointment
+        fields = ('id', 'clinician', 'patient', 'status')

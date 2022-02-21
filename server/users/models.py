@@ -1,3 +1,4 @@
+from tkinter import FLAT
 from django.contrib.auth.models import AbstractUser
 from django.db import models
 
@@ -11,6 +12,15 @@ class User(AbstractUser):
     REQUIRED_FIELDS = ['first_name', 'last_name']
 
     objects = UserManager()
+
+    # for convenience
+    @property
+    def group(self):
+        groups = self.groups.values_list('name', FLAT=True)
+        if 'patient' in groups:
+            return 'patient'
+        else:
+            return 'clinician'
 
     def __str__(self):
         return self.email

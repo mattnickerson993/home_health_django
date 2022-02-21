@@ -1,6 +1,12 @@
 from rest_framework import generics, permissions
+from rest_framework.throttling import UserRateThrottle
 
-from .serializers import AppointmentListSerializer, AppointmentCreateSerializer
+from .serializers import (
+    AppointmentListSerializer,
+    AppointmentCreateSerializer,
+    AppointmentDetailSerializer,
+    AppointmentUpdateSerializer,
+)
 from .models import Appointment
 
 
@@ -19,20 +25,21 @@ class AppointmentCreateView(generics.CreateAPIView):
     def get_queryset(self):
         return Appointment.objects.all()
 
-# class TripDetailView(generics.RetrieveAPIView):
-#     permission_classes = [permissions.IsAuthenticated]
-#     serializer_class = TripDetailSerializer
-#     lookup_field = 'id'
-#     lookup_url_kwarg = 'trip_id'
-#     queryset = Trip.objects.all()
+
+class AppointmentDetailView(generics.RetrieveAPIView):
+    permission_classes = [permissions.IsAuthenticated]
+    serializer_class = Appointment
+    lookup_field = 'id'
+    lookup_url_kwarg = 'appointment_id'
+    queryset = Appointment.objects.all()
 
 
-# class TripUpdateView(generics.UpdateAPIView):
-#     permission_classes = [permissions.IsAuthenticated]
-#     throttle_classes = [UserRateThrottle]
+class AppointmentUpdateView(generics.UpdateAPIView):
+    permission_classes = [permissions.IsAuthenticated]
+    throttle_classes = [UserRateThrottle]
 
-#     queryset = Trip.objects.all()
-#     serializer_class = TripUpdateSerializer
+    queryset = Appointment.objects.all()
+    serializer_class = AppointmentUpdateSerializer
 
-#     lookup_field = 'id'
-#     lookup_url_kwarg = 'trip_id'
+    lookup_field = 'id'
+    lookup_url_kwarg = 'appointment_id'

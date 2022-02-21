@@ -12,10 +12,10 @@ from channels.db import database_sync_to_async
 from channels.layers import get_channel_layer
 from channels.testing import WebsocketCommunicator
 from rest_framework_simplejwt.tokens import AccessToken
-from appointments.models import Appointment
-from config.middleware import User
 
+from appointments.models import Appointment
 from config.routing import application
+
 
 # defaults
 default_patient_create_data = {
@@ -45,7 +45,7 @@ USER = get_user_model()
 # opens thread to handle
 @database_sync_to_async
 def create_user(group, **kwargs):
-    user = User.objects.create_user(**kwargs)
+    user = USER.objects.create_user(**kwargs)
     group, _ = Group.objects.get_or_create(name=group)
     user.groups.add(group)
     user.save()
@@ -167,7 +167,46 @@ class TestWebSocket:
         channel_layer = get_channel_layer()
         await channel_layer.group_send(f'{appt.id}', message=message)
 
+        # patient receives message as member of appt group
         resp = await communicator.receive_json_from()
         assert resp == message
 
+        await communicator.disconnect()
+    
+    async def test_clin_can_update_patient(self, settings):
+
+        # create appt
+        settings.CHANNEL_LAYERS = TEST_CHANNEL_LAYERS
+        patient, access = await create_user('patient', **default_patient_create_data)
+        clinician, clin_access = await create_user('clinician', **default_clinician_create_data)
+        appt = await create_appt(clinician, patient)
+
+        # subscribed to appt channel
+        channel_layer = get_channel_layer()
+        await channel_layer.group_add(f'{appt.id}', channel='test_channel')
+
+        # connect as clinician
+        communicator = WebsocketCommunicator(
+            application=application,
+            path=f'/home_health/appointments/?token={clin_access}'
+        )
+        await communicator.connect()
+
+        # send message as clinician to schedule appt
+        message = {
+            'type': 'update.appointment',
+            'data': {
+                'id': f'{appt.id}',
+                'clinician': f'{clinician.id}',
+                'patient': f'{patient.id}',
+                'status': f'{Appointment.SCHEDULED}'
+            }
+        }
+
+        await communicator.send_json_to(message)
+
+        response = await channel_layer.receive('test_channel')
+        data = response.get('data')
+        assert data['id'] == f'{appt.id}'
+        assert data['status'] == f'{Appointment.SCHEDULED}'
         await communicator.disconnect()
