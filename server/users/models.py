@@ -1,4 +1,5 @@
 from tkinter import FLAT
+from tokenize import blank_re
 from django.contrib.auth.models import AbstractUser
 from django.db import models
 
@@ -8,6 +9,8 @@ from users.managers import UserManager
 class User(AbstractUser):
     username = None
     email = models.EmailField(unique=True, max_length=255)
+    photo = models.ImageField(upload_to='profile_pics', null=True, blank=True)
+
     USERNAME_FIELD = 'email'
     REQUIRED_FIELDS = ['first_name', 'last_name']
 
@@ -16,7 +19,7 @@ class User(AbstractUser):
     # for convenience
     @property
     def group(self):
-        groups = self.groups.values_list('name', FLAT=True)
+        groups = self.groups.values_list('name', flat=True)
         if 'patient' in groups:
             return 'patient'
         else:

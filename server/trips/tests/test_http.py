@@ -1,11 +1,14 @@
+from io import BytesIO
 import json
 
 from django.contrib.auth import get_user_model
 from django.contrib.auth.models import Group
+from django.core.files.uploadedfile import SimpleUploadedFile
 
 from rest_framework import status
 from rest_framework.reverse import reverse
 from rest_framework.test import APITestCase
+from PIL import Image
 
 from trips.models import Trip
 
@@ -13,16 +16,8 @@ PASSWORD = 'MonteCri$+o99'
 
 USER = get_user_model()
 
-default_user_request_data = {
-    'email': 'test_email@email.com',
-    'first_name': 'test_first',
-    'last_name': 'test_last',
-    'password1': PASSWORD,
-    'password2': PASSWORD,
-    'groups': [{'name': 'patient'}]
-}
 
-;
+
 default_user_create_data = {
     'email': 'test_email1@email.com',
     'first_name': 'test_first1',
@@ -36,7 +31,6 @@ default_user_two_create_data = {
     'last_name': 'test_last2',
     'password': PASSWORD,
 }
-
 
 def create_test_user(**kwargs):
     return USER.objects.create_user(**kwargs)

@@ -130,12 +130,18 @@ STATIC_URL = "/static/"
 
 STATICFILES_DIRS = []
 
+STATICFILES_STORAGE = 'django.contrib.staticfiles.storage.StaticFilesStorage'
+
 STATICFILES_FINDERS = [
     "django.contrib.staticfiles.finders.FileSystemFinder",
     "django.contrib.staticfiles.finders.AppDirectoriesFinder",
 ]
 
+# media
 
+MEDIA_URL = '/media/'
+
+MEDIA_ROOT = Path(BASE_DIR / 'media')
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.0/ref/settings/#default-auto-field
 

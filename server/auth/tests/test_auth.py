@@ -1,16 +1,27 @@
 import base64
+from io import BytesIO
 import json
 
+from django.core.files.uploadedfile import SimpleUploadedFile
 from django.contrib.auth import get_user_model
 from django.contrib.auth.models import Group
 
 from rest_framework import status
 from rest_framework.reverse import reverse
 from rest_framework.test import APITestCase
+from PIL import Image
 
 PASSWORD = 'MonteCri$+o99'
 
 USER = get_user_model()
+
+
+def create_test_img():
+    data = BytesIO()
+    Image.new('RGB', (100, 100)).save(data, 'PNG')
+    data.seek(0)
+    return SimpleUploadedFile('photo.png', data.getvalue())
+
 
 default_user_request_data = {
     'email': 'test_email@email.com',
@@ -18,7 +29,8 @@ default_user_request_data = {
     'last_name': 'test_last',
     'password1': PASSWORD,
     'password2': PASSWORD,
-    'groups': [{'name': 'patient'}]
+    'group': 'patient',
+    'photo': create_test_img(),
 }
 
 default_user_create_data = {
@@ -35,16 +47,18 @@ def create_test_user(**kwargs):
 
 class AuthenticationTest(APITestCase):
     def test_user_can_sign_up(self):
-        response = self.client.post(reverse('auth:sign_up'), data=default_user_request_data, format='json')
+        
+        response = self.client.post(reverse('auth:sign_up'), data=default_user_request_data)
         user = USER.objects.prefetch_related('groups').last()
         groups = [group.name for group in user.groups.all()]
-        response_groups = [group['name'] for group in response.data['groups']]
+        response_group = response.data['group']
         self.assertEqual(status.HTTP_201_CREATED, response.status_code)
         self.assertEqual(response.data['id'], user.id)
         self.assertEqual(response.data['email'], user.email)
         self.assertEqual(response.data['first_name'], user.first_name)
         self.assertEqual(response.data['last_name'], user.last_name)
-        self.assertEqual(response_groups, groups)
+        self.assertEqual(response_group, groups[0])
+        self.assertIsNotNone(user.photo)
 
     def test_user_can_log_in(self):
         user = create_test_user(**default_user_create_data)
