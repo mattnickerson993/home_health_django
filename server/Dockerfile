@@ -1,4 +1,4 @@
-FROM python:3.10-slim-buster
+FROM python:3.9-slim-buster
 
 WORKDIR /usr/scr/app
 
@@ -7,6 +7,7 @@ ENV PYTHONBUFFERRED 1
 
 RUN apt-get update \
     && apt-get -y install gcc postgresql \
+    && apt-get -y install python3-tk tk-dev \
     && apt-get clean
 
 RUN pip install --upgrade pip

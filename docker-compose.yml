@@ -17,7 +17,9 @@ services:
       - PGHOST=hh-database
       - REDIS_URL=redis://hh-redis:6379/0
     ports:
-      -8003:8000
+      - 8003:8000
+    volumes:
+      - ./server:/usr/src/app
   
   hh-redis:
     container_name: hh-redis
@@ -41,9 +43,13 @@ services:
     container_name: hh-client
     depends_on:
       - hh-server
+    environment:
+      - CHOKIDAR_USEPOLLING=true
     ports:
       - 3001:3000
     stdin_open: true
+    volumes:
+      - ./client:/usr/src/app
     
 volumes:
-  - hh-database:
+  hh-database:

@@ -3,10 +3,10 @@ import { Link, Navigate } from 'react-router-dom'
 import { api } from '../api'
 import axios from 'axios'
 import isEmail from 'validator/lib/isEmail'
-import { useForm } from 'react-hook-form'
+import { useForm, Controller } from 'react-hook-form'
 import SEO from '../components/Seo'
 // import { useSignUpStyles } from '../styles'
-import { Button, Card, CardContent, CardHeader, CircularProgress, InputAdornment, TextField, Typography } from '@mui/material'
+import { Button, Card, CardContent, CardHeader, CircularProgress, FormControl, InputAdornment, InputLabel, MenuItem, Select, TextField, Typography } from '@mui/material'
 import { headers } from '../config/config'
 import { CheckCircleOutline, HighlightOff } from '@mui/icons-material'
 
@@ -20,11 +20,12 @@ const SignUp = () => {
     
 
     async function onSubmit(data){
+        console.log('data', data)
+        return
         setLoading(true)
         setError("")
         const { email, firstname, lastname, password, confirmpassword} = data
         try{
-
             if (password !== confirmpassword){
                 setError('Passwords must match')
                 return
@@ -114,6 +115,17 @@ const SignUp = () => {
                     margin="dense"
                     autoComplete="lastname"
                     />
+                    <FormControl fullWidth>
+                        <InputLabel id="demo-simple-select-label">Select Group</InputLabel>
+                        <Select 
+                            name='group'
+                            {...register('group', {
+                                required: true
+                        })}>
+                            <MenuItem value={'patient'}>Patient</MenuItem>
+                            <MenuItem value={'clinician'}>Clinician</MenuItem>
+                        </Select>
+                    </FormControl>
                     <TextField
                     name="password"
                     {...register('password', {
