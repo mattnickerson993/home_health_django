@@ -1,0 +1,49 @@
+version: '3.8'
+
+services:
+
+  hh-server:
+    build: 
+      context: ./server
+    command: python manage.py runserver 0.0.0.0:8000
+    container_name: hh-server
+    depends_on:
+      - hh-redis
+      - hh-database
+    environment:
+      - PGDATABASE=homehealth
+      - PGUSER=homehealth
+      - PGPASSWORD=homehealth
+      - PGHOST=hh-database
+      - REDIS_URL=redis://hh-redis:6379/0
+    ports:
+      -8003:8000
+  
+  hh-redis:
+    container_name: hh-redis
+    image: redis:6-alpine
+
+  hh-database:
+    container_name: hh-database
+    image: postgres:14-alpine
+    environment:
+      - POSTGRES_USER=homehealth
+      - POSTGRES_PASSWORD=homehealth
+    expose:
+      - 5432
+    volumes:
+      - hh-database:/var/lib/postgresql/data
+
+  hh-client:
+    build:
+      context: ./client
+    command: npm start
+    container_name: hh-client
+    depends_on:
+      - hh-server
+    ports:
+      - 3001:3000
+    stdin_open: true
+    
+volumes:
+  - hh-database:
