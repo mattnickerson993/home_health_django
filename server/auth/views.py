@@ -10,9 +10,12 @@ USER = get_user_model()
 
 
 class SignUpView(generics.CreateAPIView):
-    parser_classes = (MultiPartParser,)
+    # parser_classes = (MultiPartParser,)
     queryset = USER.objects.all()
     serializer_class = UserSerializer
+    
+
+
 
 
 class LogInView(TokenObtainPairView):

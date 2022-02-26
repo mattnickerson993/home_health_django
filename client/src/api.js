@@ -1,11 +1,11 @@
 
 
-const baseURL = process.env.NODE_ENV === "development" ? "http://127.0.0.1:8000" : process.env.REACT_APP_API_URL
+const baseURL = process.env.NODE_ENV === "development" ? "http://127.0.0.1:8003" : process.env.REACT_APP_API_URL
 
 export const api = {
     auth: {
         login: `${baseURL}/auth/log_in/`,
-        register: `${baseURL}/auth/sign_up`,
+        register: `${baseURL}/auth/sign_up/`,
         activate: `${baseURL}/auth/users/activation/`,
         // getuser: `${baseURL}/auth/users/me/`,
         verify: `${baseURL}/auth/token/verify/`,

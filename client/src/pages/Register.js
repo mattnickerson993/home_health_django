@@ -9,29 +9,40 @@ import SEO from '../components/Seo'
 import { Button, Card, CardContent, CardHeader, CircularProgress, FormControl, InputAdornment, InputLabel, MenuItem, Select, TextField, Typography } from '@mui/material'
 import { headers } from '../config/config'
 import { CheckCircleOutline, HighlightOff } from '@mui/icons-material'
+import { FormInputDropdown } from '../components/Dropdown'
+import { errorIcon, validIcon } from '../components/Icons'
+import { ThemeContext } from '@emotion/react'
+
 
 const SignUp = () => {
-    // const classes = useSignUpStyles()
     const [loading, setLoading ] = React.useState(false)
     const [ error, setError ] = React.useState(null)
     const [accountCreated, setAccountCreated] = React.useState(false)
-    const { register, handleSubmit, formState : { errors, isSubmitting, touchedFields, isValid }  } = useForm({mode:"onBlur"})
+    const { register, handleSubmit, control, formState : { errors, isSubmitting, touchedFields, isValid }  } = useForm({mode:"onBlur"})
 
     
 
     async function onSubmit(data){
-        console.log('data', data)
-        return
+        
         setLoading(true)
         setError("")
-        const { email, firstname, lastname, password, confirmpassword} = data
+        const { email, firstname, lastname, group, password, confirmpassword} = data
         try{
             if (password !== confirmpassword){
                 setError('Passwords must match')
                 return
             }
-            const res = await axios.post(api.auth.register, JSON.stringify(data), headers)
+            const formData = new FormData();
+            formData.append('email', email);
+            formData.append('first_name', firstname)
+            formData.append('last_name', lastname)
+            formData.append('password1', password)
+            formData.append('password2', confirmpassword)
+            formData.append('group', group )
+            
+            const res = await axios.post(api.auth.register, formData, headers)
             if (res.status !== 201){
+                console.log('response', res, res.status)
                 setLoading(false)
                 return
             }
@@ -43,17 +54,10 @@ const SignUp = () => {
         }
     }  
 
-    const errorIcon = (
-        <InputAdornment position="end">
-            <HighlightOff style={{color: 'red', height: 30, width: 30}} />
-        </InputAdornment>
-    )
+    if(accountCreated){
+        return <Navigate to="/login/" />
+    }
 
-    const validIcon = (
-        <InputAdornment position="end">
-            <CheckCircleOutline style={{color: 'green', height: 30, width: 30}} />
-        </InputAdornment>
-    )
 
     return (
         <>
@@ -115,17 +119,33 @@ const SignUp = () => {
                     margin="dense"
                     autoComplete="lastname"
                     />
-                    <FormControl fullWidth>
-                        <InputLabel id="demo-simple-select-label">Select Group</InputLabel>
+                   <Controller
+                    control={control}
+                    name={'group'}
+                    defaultValue=""
+                    rules={{ required: true }}
+                    render={({ 
+                        field: { onChange, onBlur, value, name, ref },
+                        fieldState: { invalid, isTouched, isDirty, error },
+                        formState
+                        }) => (
+                    <FormControl 
+                        fullWidth 
+                        error={error}
+                        color={'success'}
+                    >
+                        <InputLabel id="group-select-label">Select Group</InputLabel>
                         <Select 
-                            name='group'
-                            {...register('group', {
-                                required: true
-                        })}>
+                            onChange={onChange} 
+                            value={value}
+                            onBlur={onBlur}
+                            >
                             <MenuItem value={'patient'}>Patient</MenuItem>
                             <MenuItem value={'clinician'}>Clinician</MenuItem>
                         </Select>
                     </FormControl>
+                    )}
+                    />
                     <TextField
                     name="password"
                     {...register('password', {

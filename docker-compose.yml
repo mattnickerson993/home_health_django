@@ -50,6 +50,7 @@ services:
     stdin_open: true
     volumes:
       - ./client:/usr/src/app
-    
+
 volumes:
   hh-database:
+    
