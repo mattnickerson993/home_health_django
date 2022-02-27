@@ -1,16 +1,10 @@
-import Landing from "../pages/Landing"
+import Home from "../pages/Home"
 import LogIn from "../pages/Login"
+import NoAuthLayout from "../pages/NoAuthLayout"
 import NotFound from "../pages/NotFound"
 import Register from "../pages/Register"
 
-
-
-const routes = [
-    {
-        path:'/',
-        component: <Landing/>,
-        exact:true,
-    },
+export const unauthenticateRoutes = [
     {
         path:'/login/',
         component: <LogIn/>,
@@ -21,10 +15,6 @@ const routes = [
     },
     {
         path:'*',
-        component:<NotFound/>,
+        component:<NotFound/>
     }
-
 ]
-
-
-export default routes

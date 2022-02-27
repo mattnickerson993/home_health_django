@@ -1,6 +1,6 @@
 
 
-const baseURL = process.env.NODE_ENV === "development" ? "http://127.0.0.1:8003" : process.env.REACT_APP_API_URL
+export const baseURL = process.env.NODE_ENV === "development" ? "http://127.0.0.1:8003" : process.env.REACT_APP_API_URL
 
 export const api = {
     auth: {

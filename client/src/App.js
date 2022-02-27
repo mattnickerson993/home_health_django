@@ -1,34 +1,64 @@
+
 import React from 'react'
+import { api } from './api';
+import axiosInstance from './auth/axiosInstance';
+import { AuthContext, AuthProvider } from './context';
 import {
   BrowserRouter as Router,
-  Route,
   Routes,
 } from "react-router-dom";
-import routes from './config/routes'
-import { getUser } from './services/authService';
+
+import Home from './pages/Home';
+import { getAccessToken } from './utils/storage';
 
 function App() {
-  const [user, setUser] = React.useState(getUser)
-  console.log('user', user)
-  React.useEffect(()=>{
-    console.log('yo')
+  const {state, dispatch} = React.useContext(AuthContext)
+  const isAuthenticated = state ? state.isAuthenticated : false
+  console.log('app loading')
+  React.useEffect(() =>{
+    // define async function to check auth
+    const verifyUser = async() => {
+        const accessToken = getAccessToken()
+        if (accessToken){
+            const res = await axiosInstance.post(api.auth.verify, {'token': accessToken})
+            console.log('res', res)
+            if (res.status === 200){
+                return true
+            }
+    
+        }
+          return false
+      }
+      // call async function inside useeffect
+      if(!isAuthenticated){
+        verifyUser().then(resp =>{
+          if(resp){
+              dispatch({
+                  'type': "AUTHENTICATED_SUCCESS"
+              })
+          }
+          else{
+              dispatch({
+                'type': "AUTHENTICATED_FAIL"
+            })
+          }
+        }).catch(error => {
+          console.log(error)
+          dispatch({
+            'type': "AUTHENTICATED_FAIL"
+          })
+        })
+      }
+      console.log('useffect finished in app')
   },[])
+  console.log('app loaded')
   return (
     <>  
-        <Router >
-          <Routes>
-            {routes.map(route => (
-              (
-                <Route
-                key={route.path}
-                path={route.path}
-                element={route.component}
-                exact={route.exact}
-                  />
-              )
-            ))}  
-          </Routes>
-        </Router>
+    <Router>
+      <Routes>
+        <Home/>
+      </Routes>
+    </Router>
     </>
   );
 }

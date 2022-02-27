@@ -24,6 +24,7 @@ class UserSerializer(serializers.ModelSerializer):
     # photo = serializers.ImageField(max_length=None, use_url=True)
 
     def validate(self, data):
+
         if data['password1'] != data['password2']:
             raise serializers.ValidationError('Passwords must match.')
         return data

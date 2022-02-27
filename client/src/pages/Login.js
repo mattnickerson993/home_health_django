@@ -11,10 +11,13 @@ import axios from 'axios';
 import { headers } from '../config/config';
 import { setLocalStorage } from '../utils/storage';
 import { Navigate } from 'react-router-dom';
+import { AuthContext } from '../context';
 
 export default function LogIn() {
   const [loggedIn, setLoggedIn] = React.useState(false)
   const [loading, setLoading] = React.useState(false)
+  const {state, dispatch} = React.useContext(AuthContext)
+
   const handleSubmit = async (event) => {
     event.preventDefault();
     const data = new FormData(event.currentTarget);
@@ -24,19 +27,18 @@ export default function LogIn() {
       password: data.get('password'),
     }), headers)
     console.log(res, res.status)
+
     if (res.status !== 200){
         console.log('error')
         setLoading(false)
         return
     }
-    setLocalStorage(res.data)
+    dispatch({
+      type: "LOGIN_SUCCESS",
+      payload: res.data
+    })
     setLoggedIn(true)
   };
-
-  if(loggedIn){
-    console.log('trying to navigate')
-    return <Navigate to='/'/>;
-  }
 
 
   return (

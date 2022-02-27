@@ -4,12 +4,15 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import App from './App';
 import {darkTheme} from './Theme'
+import { AuthProvider } from './context';
 
 
 ReactDOM.render(
   <ThemeProvider theme={darkTheme}>
     <CssBaseline>
-      <App />
+      <AuthProvider>
+        <App/>
+      </AuthProvider>
     </CssBaseline>
   </ThemeProvider>,
   document.getElementById('root')
