@@ -5,9 +5,14 @@ import {
   Routes,
 } from "react-router-dom";
 import routes from './config/routes'
+import { getUser } from './services/authService';
 
 function App() {
-  
+  const [user, setUser] = React.useState(getUser)
+  console.log('user', user)
+  React.useEffect(()=>{
+    console.log('yo')
+  },[])
   return (
     <>  
         <Router >

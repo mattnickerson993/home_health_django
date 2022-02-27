@@ -13,7 +13,6 @@ class SignUpView(generics.CreateAPIView):
     # parser_classes = (MultiPartParser,)
     queryset = USER.objects.all()
     serializer_class = UserSerializer
-    
 
 
 

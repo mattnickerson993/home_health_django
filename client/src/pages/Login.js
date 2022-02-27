@@ -2,38 +2,42 @@ import * as React from 'react';
 import Avatar from '@mui/material/Avatar';
 import Button from '@mui/material/Button';
 import TextField from '@mui/material/TextField';
-import FormControlLabel from '@mui/material/FormControlLabel';
-import Checkbox from '@mui/material/Checkbox';
-import Link from '@mui/material/Link';
-import Grid from '@mui/material/Grid';
 import Box from '@mui/material/Box';
 import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
 import Typography from '@mui/material/Typography';
 import Container from '@mui/material/Container';
-
-function Copyright(props) {
-  return (
-    <Typography variant="body2" color="text.secondary" align="center" {...props}>
-      {'Copyright © '}
-      <Link color="inherit" href="https://mui.com/">
-        Your Website
-      </Link>{' '}
-      {new Date().getFullYear()}
-      {'.'}
-    </Typography>
-  );
-}
+import { api } from '../api';
+import axios from 'axios';
+import { headers } from '../config/config';
+import { setLocalStorage } from '../utils/storage';
+import { Navigate } from 'react-router-dom';
 
 export default function LogIn() {
-  const handleSubmit = (event) => {
+  const [loggedIn, setLoggedIn] = React.useState(false)
+  const [loading, setLoading] = React.useState(false)
+  const handleSubmit = async (event) => {
     event.preventDefault();
     const data = new FormData(event.currentTarget);
-    // eslint-disable-next-line no-console
-    console.log({
+    
+    const res = await axios.post(api.auth.login, JSON.stringify({
       email: data.get('email'),
       password: data.get('password'),
-    });
+    }), headers)
+    console.log(res, res.status)
+    if (res.status !== 200){
+        console.log('error')
+        setLoading(false)
+        return
+    }
+    setLocalStorage(res.data)
+    setLoggedIn(true)
   };
+
+  if(loggedIn){
+    console.log('trying to navigate')
+    return <Navigate to='/'/>;
+  }
+
 
   return (
       <>
@@ -73,10 +77,6 @@ export default function LogIn() {
               id="password"
               autoComplete="current-password"
             />
-            <FormControlLabel
-              control={<Checkbox value="remember" color="primary" />}
-              label="Remember me"
-            />
             <Button
               type="submit"
               fullWidth
@@ -85,21 +85,8 @@ export default function LogIn() {
             >
               Sign In
             </Button>
-            <Grid container>
-              <Grid item xs>
-                <Link href="#" variant="body2">
-                  Forgot password?
-                </Link>
-              </Grid>
-              <Grid item>
-                <Link href="#" variant="body2">
-                  {"Don't have an account? Sign Up"}
-                </Link>
-              </Grid>
-            </Grid>
           </Box>
         </Box>
-        <Copyright sx={{ mt: 8, mb: 4 }} />
       </Container>
       </>
   )}
