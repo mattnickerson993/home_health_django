@@ -11,8 +11,7 @@ export const AuthContext = React.createContext()
 
 export const AuthProvider = ({ children }) => {
     const [state, dispatch] = React.useReducer(AuthReducer, initialState)
-    const loading  = state.loading
-    console.log('loading context', state)
+
     const verifyUser = async() => {
         const refreshToken = getRefreshToken()
         if (refreshToken){
@@ -36,19 +35,11 @@ export const AuthProvider = ({ children }) => {
         }
     
         }
-      if(!loading){
-          console.log('im not loading')
-      }
-      React.useEffect(() =>{
-        if(loading){
-            console.log('verify user called')
-            verifyUser()
-        }
-      },[])
+    
 
     return (
     <AuthContext.Provider value={{ state, dispatch }}>
-        {loading ? null : children}
+        {children}
      </AuthContext.Provider>
     )
 }

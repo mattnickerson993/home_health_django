@@ -1,11 +1,11 @@
-import { getUser } from "../services/authService"
+import { getUser, removeUser } from "../services/authService"
 import { setLocalStorage } from "../utils/storage"
 
 export const initialState = {
-    userDetails: "",
-    isAuthenticated: false,
+    userDetails: getUser(),
+    isAuthenticated: getUser && true,
     errorMessage:"",
-    loading:true,
+    loading:false,
 }
 
 export const AuthReducer = (state, action ) => {
@@ -31,12 +31,11 @@ export const AuthReducer = (state, action ) => {
             }
         
         case "LOGOUT":
-            localStorage.removeItem('access')
-            localStorage.removeItem('refresh')
+            removeUser()
             return {
                 ...state,
                 isAuthenticated: false,
-                userDetails:null,
+                userDetails:"",
                 
             }
     

@@ -8,7 +8,7 @@ import routes from './config/routes'
 import PrivateRoute from './components/PrivateRoute'
 
 function App() {
-  console.log('loading app')
+  
   return (
     <>  
         <Router >
@@ -17,7 +17,7 @@ function App() {
               route.private? 
               (
                 <>
-                 <Route key={route.path} exact={route.exact} path={route.path} element={<PrivateRoute/>}>
+                 <Route key={Math.random().toString(5)} element={<PrivateRoute/>}>
                   <Route
                     key={route.path}
                     path={route.path}

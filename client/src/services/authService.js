@@ -7,4 +7,9 @@ export const getUser = () => {
         return {id, email, first_name, last_name, group}
     }
     return undefined
-}   
+}  
+
+export const removeUser = () => {
+    localStorage.removeItem('hh.auth')
+    return 
+}
