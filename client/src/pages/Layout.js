@@ -1,11 +1,14 @@
 import React from 'react'
-import AuthenticateApp from './AuthenticatedApp'
+import useAuthState from '../hooks/useAuthState'
+
 
 function Layout() {
+  const { userDetails, isAuthenticated } = useAuthState()
+  console.log('heres layout')
   return (
     <>
-      <div>Layout</div>
-      <AuthenticateApp/>
+      <h1>Hello world</h1>
+     <div>{isAuthenticated ? 'Auth Layout' : 'Unauth Layout'}</div>
     </>
     
   )

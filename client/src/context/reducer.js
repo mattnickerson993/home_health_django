@@ -5,7 +5,7 @@ export const initialState = {
     userDetails: "",
     isAuthenticated: false,
     errorMessage:"",
-    loading:false,
+    loading:true,
 }
 
 export const AuthReducer = (state, action ) => {
@@ -16,7 +16,7 @@ export const AuthReducer = (state, action ) => {
                 ...state,
                 userDetails: getUser(),
                 isAuthenticated: true,
-                    
+                loading:false
             }
         }
         case "USER_LOADED_SUCCESS":
@@ -56,6 +56,7 @@ export const AuthReducer = (state, action ) => {
                 ...state,
                 userDetails: getUser(),
                 isAuthenticated: true,
+                loading:false,
             }
         }
     
@@ -63,6 +64,8 @@ export const AuthReducer = (state, action ) => {
            return {
             ...state,
             isAuthenticated: false,
+            loading: false,
+            userDetails:""
            } 
         }
     

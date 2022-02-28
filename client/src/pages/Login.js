@@ -40,7 +40,10 @@ export default function LogIn() {
     setLoggedIn(true)
   };
 
-
+  if(loggedIn){
+    return <Navigate to='/'/>
+  }
+  
   return (
       <>
       <Container component="main" maxWidth="xs">
