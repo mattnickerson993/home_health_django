@@ -1,5 +1,4 @@
 import {
-  AppBar,
   Avatar,
   Button,
   Grow,
@@ -18,12 +17,34 @@ import InfoIcon from "@mui/icons-material/Info";
 import ArchiveIcon from "@mui/icons-material/Archive";
 import { AuthContext } from "../context";
 import { Navigate } from "react-router-dom";
+import { styled, useTheme } from "@mui/material/styles";
+import MuiAppBar from "@mui/material/AppBar";
 
-const Navbar = ({ auth }) => {
+const drawerWidth = 240;
+
+const MyAppBar = styled(MuiAppBar, {
+  shouldForwardProp: (prop) => prop !== "open",
+})(({ theme, open }) => ({
+  zIndex: theme.zIndex.drawer + 1,
+  transition: theme.transitions.create(["width", "margin"], {
+    easing: theme.transitions.easing.sharp,
+    duration: theme.transitions.duration.leavingScreen,
+  }),
+  ...(open && {
+    marginLeft: drawerWidth,
+    width: `calc(100% - ${drawerWidth}px)`,
+    transition: theme.transitions.create(["width", "margin"], {
+      easing: theme.transitions.easing.sharp,
+      duration: theme.transitions.duration.enteringScreen,
+    }),
+  }),
+}));
+
+const Navbar = ({ auth, open, handleOpen }) => {
   const [anchorEl, setAnchorEl] = React.useState(null);
   const { dispatch } = React.useContext(AuthContext);
   const [loggedIn, setLoggedIn] = React.useState(auth ? true : false);
-
+  const theme = useTheme();
   const handleClick = (event) => {
     setAnchorEl(event.currentTarget);
   };
@@ -45,7 +66,7 @@ const Navbar = ({ auth }) => {
   }
 
   return (
-    <AppBar position="static" sx={{ position: "relative" }}>
+    <MyAppBar position="fixed">
       <Toolbar
         sx={{
           display: "flex",
@@ -60,18 +81,18 @@ const Navbar = ({ auth }) => {
             justifyContent: "space-evenly",
           }}
         >
-          <Tooltip title="Home">
-            <IconButton onClick={handleClick}>
-              <Avatar
-                alt="Logo"
-                sx={{
-                  width: (theme) => theme.spacing(7),
-                  height: (theme) => theme.spacing(7),
-                  objectPosition: "center",
-                }}
-              />
-            </IconButton>
-          </Tooltip>
+          <IconButton
+            color="inherit"
+            aria-label="open drawer"
+            onClick={handleOpen}
+            edge="start"
+            sx={{
+              marginRight: "36px",
+              ...(open && { display: "none" }),
+            }}
+          >
+            <MenuIcon />
+          </IconButton>
 
           <Typography variant="h6" sx={{ marginLeft: "1em" }}>
             Home Health
@@ -179,7 +200,7 @@ const Navbar = ({ auth }) => {
           </Hidden>
         </div>
       </Toolbar>
-    </AppBar>
+    </MyAppBar>
   );
 };
 

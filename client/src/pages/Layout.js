@@ -1,18 +1,14 @@
-import React from 'react'
-import useAuthState from '../hooks/useAuthState'
-import NavBar from '../components/Navbar'
+import React from "react";
+import useAuthState from "../hooks/useAuthState";
+import NavBar from "../components/Navbar";
+import Sidebar from "../components/Sidebar";
 
 function Layout() {
-  const { userDetails, isAuthenticated } = useAuthState()
-  
   return (
     <>
-      <NavBar auth={isAuthenticated}/>
-      <h1>Hello world</h1>
-     <div>{isAuthenticated ? 'Auth Layout' : 'Unauth Layout'}</div>
+      <Sidebar />
     </>
-    
-  )
+  );
 }
 
-export default Layout
+export default Layout;
