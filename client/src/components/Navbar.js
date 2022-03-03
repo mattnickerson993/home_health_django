@@ -66,7 +66,7 @@ const Navbar = ({ auth, open, handleOpen }) => {
   }
 
   return (
-    <MyAppBar position="fixed">
+    <MyAppBar position="fixed" open={open}>
       <Toolbar
         sx={{
           display: "flex",
