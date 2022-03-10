@@ -8,7 +8,6 @@ from appointments.consumers import AppointmentConsumer
 from trips.consumers import TripConsumer
 
 
-
 application = ProtocolTypeRouter({
     'http': get_asgi_application(),
     'websocket': TokenAuthMiddlewareStack(

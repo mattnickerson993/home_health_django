@@ -1,5 +1,3 @@
-from tkinter import FLAT
-from tokenize import blank_re
 from django.contrib.auth.models import AbstractUser
 from django.db import models
 

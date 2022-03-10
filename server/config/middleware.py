@@ -13,7 +13,8 @@ from rest_framework_simplejwt.tokens import AccessToken
 
 User = get_user_model()
 
-# middleware to pluck JWT from querystring and authenitcate
+
+# middleware to pluck JWT from querystring and authenticate
 # JS Websocket API does not support custom headers
 @database_sync_to_async
 def get_user(scope):
