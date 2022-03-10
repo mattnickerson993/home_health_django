@@ -15,7 +15,5 @@ class SignUpView(generics.CreateAPIView):
     serializer_class = UserSerializer
 
 
-
-
 class LogInView(TokenObtainPairView):
     serializer_class = LoginSerializer

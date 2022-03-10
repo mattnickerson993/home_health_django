@@ -51,3 +51,11 @@ class UserSerializer(serializers.ModelSerializer):
             'first_name', 'last_name', 'group',
         )
         read_only_fields = ('id', 'photo')
+
+
+class UserListSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = USER
+        fields = ('id', 'email', 'first_name', 'last_name', 'group')
+        depth = 1

@@ -1,13 +1,24 @@
+from pydoc import cli
+from django.contrib.auth import get_user_model
 from django.shortcuts import get_object_or_404
 
 from channels.db import database_sync_to_async
 from channels.generic.websocket import AsyncJsonWebsocketConsumer
 
 from appointments.models import Appointment
-
+from users.serializers import UserListSerializer
 from .serializers import AppointmentCreateSerializer, AppointmentUpdateSerializer, NestedAppointmentSerializer
 
+User = get_user_model()
+
+
 class AppointmentConsumer(AsyncJsonWebsocketConsumer):
+
+    @database_sync_to_async
+    def _get_available_clinicians(self):
+        users = User.objects.filter(groups__name="clinician")
+        serializer = UserListSerializer(users, many=True)
+        return serializer.data
 
     @database_sync_to_async
     def _create_appointment(self, data):
@@ -58,7 +69,12 @@ class AppointmentConsumer(AsyncJsonWebsocketConsumer):
                     channel=self.channel_name
                 )
             await self.accept()
-    
+
+    async def search_clinicians(self):
+        clinicians = await self._get_available_clinicians()
+        print('clins', clinicians)
+        await self.send_json(clinicians)
+
     async def schedule_appointment(self, content, **kwargs):
         data = content.get('data')
         appt = await self._create_appointment(data)
@@ -118,6 +134,8 @@ class AppointmentConsumer(AsyncJsonWebsocketConsumer):
         message_type = content.get('type')
         if message_type == 'schedule.appointment':
             await self.schedule_appointment(content)
+        elif message_type == 'get.clinicians':
+            await self.search_clinicians()
         elif message_type == 'update.appointment':
             await self.update_appointment(content)
         elif message_type == 'echo.message':
