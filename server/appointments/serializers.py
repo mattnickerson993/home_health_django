@@ -17,7 +17,7 @@ class AppointmentCreateSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Appointment
-        fields = ('clinician', 'patient', 'start_time', 'length')
+        fields = '__all__'
 
 
 class NestedAppointmentSerializer(serializers.ModelSerializer):

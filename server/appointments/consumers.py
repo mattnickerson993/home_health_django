@@ -22,8 +22,10 @@ class AppointmentConsumer(AsyncJsonWebsocketConsumer):
 
     @database_sync_to_async
     def _create_appointment(self, data):
+        print('heres my data')
         serializer = AppointmentCreateSerializer(data=data)
         serializer.is_valid(raise_exception=True)
+        print('appointment created')
         return serializer.create(serializer.validated_data)
 
     @database_sync_to_async
@@ -74,6 +76,21 @@ class AppointmentConsumer(AsyncJsonWebsocketConsumer):
         clinicians = await self._get_available_clinicians()
         print('clins', clinicians)
         await self.send_json(clinicians)
+    
+    async def create_apt(self, content, **kwargs):
+        data = content.get('data')
+        appt = await self._create_appointment(data)
+        appt_data = await self._get_appointment_data(appt)
+
+        await self.channel_layer.group_send(group='clinicians', message={
+            'type': 'apt.requested',
+            'data': appt_data
+        })
+
+        await self.send_json({
+            'type': 'apt.requested',
+            'data': appt_data,
+        })
 
     async def schedule_appointment(self, content, **kwargs):
         data = content.get('data')
@@ -134,6 +151,8 @@ class AppointmentConsumer(AsyncJsonWebsocketConsumer):
         message_type = content.get('type')
         if message_type == 'schedule.appointment':
             await self.schedule_appointment(content)
+        elif message_type == 'create.apt':
+            await self.create_apt(content)
         elif message_type == 'get.clinicians':
             await self.search_clinicians()
         elif message_type == 'update.appointment':

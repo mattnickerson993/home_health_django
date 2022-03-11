@@ -13,8 +13,9 @@ export const connect = () => {
     _socket = webSocket(
       `ws://localhost:8003/home_health/appointments/?token=${token}`
     );
+    _socket.subscribe();
     messages = _socket.pipe(share());
-    messages.subscribe((message) => console.log(message));
+    // messages.subscribe((message) => console.log(message));
   }
 };
 
@@ -26,6 +27,14 @@ export const getAvialableClinicians = () => {
   _socket.next(message);
 };
 
+export const createApt = (apt) => {
+  connect();
+  const message = {
+    type: "create.apt",
+    data: apt,
+  };
+  _socket.next(message);
+};
 // export const createTrip = (trip) => {
 //   connect();
 //   const message = {

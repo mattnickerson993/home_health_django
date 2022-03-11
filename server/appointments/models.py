@@ -46,6 +46,7 @@ class Appointment(models.Model):
     start_time = models.DateTimeField(blank=True, null=True)
     length = models.IntegerField(null=True, blank=True)
     end_time = models.DateTimeField(blank=True, null=True)
+    patient_address = models.CharField(blank=True, null=True, max_length=255)
 
     def __str__(self) -> str:
         return f'{self.id}'
