@@ -43,3 +43,9 @@ class AppointmentUpdateView(generics.UpdateAPIView):
 
     lookup_field = 'id'
     lookup_url_kwarg = 'appointment_id'
+
+
+class AppointmentAvailablePatientView(generics.ListAPIView):
+    permission_classes = [permissions.IsAuthenticated]
+    queryset = Appointment.objects.filter(status=Appointment.REQUESTED)
+    serializer_class = AppointmentListSerializer

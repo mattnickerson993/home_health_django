@@ -79,18 +79,27 @@ class AppointmentConsumer(AsyncJsonWebsocketConsumer):
     
     async def create_apt(self, content, **kwargs):
         data = content.get('data')
+        print('data', data)
         appt = await self._create_appointment(data)
         appt_data = await self._get_appointment_data(appt)
 
         await self.channel_layer.group_send(group='clinicians', message={
-            'type': 'apt.requested',
+            'type': 'apt.requested.clins',
             'data': appt_data
         })
 
         await self.send_json({
-            'type': 'apt.requested',
+            'type': 'apt.requested.success',
             'data': appt_data,
         })
+
+    async def apt_requested_clins(self, message):
+        await self.send_json(
+            {
+                'type': 'apt.requested.clins',
+                'data': message.get('data')
+            }
+        )
 
     async def schedule_appointment(self, content, **kwargs):
         data = content.get('data')

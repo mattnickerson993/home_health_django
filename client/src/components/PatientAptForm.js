@@ -29,7 +29,7 @@ const PatientAptForm = ({ patientId }) => {
     const { patient_address } = data;
     const formData = {
       patient_address,
-      patientId,
+      patient: patientId,
     };
     createApt(formData);
   }

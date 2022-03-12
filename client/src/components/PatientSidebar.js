@@ -20,6 +20,7 @@ import useAuthState from "../hooks/useAuthState";
 import Navbar from "./Navbar";
 import SideDrawer from "./Drawer";
 import PatientAptSchedule from "./PatientAptSchedule";
+import { toast, ToastContainer } from "react-toastify";
 
 const DrawerHeader = styled("div")(({ theme }) => ({
   display: "flex",
@@ -30,8 +31,7 @@ const DrawerHeader = styled("div")(({ theme }) => ({
   ...theme.mixins.toolbar,
 }));
 
-export default function Sidebar() {
-  const { isAuthenticated, userDetails } = useAuthState();
+export default function PatientSidebar({ isAuthenticated, userDetails }) {
   const theme = useTheme();
   const [open, setOpen] = React.useState(false);
 
@@ -43,22 +43,27 @@ export default function Sidebar() {
     setOpen(false);
   };
 
+  const notify = () => {
+    toast("🦄 Wow so easy!");
+  };
   return (
-    <Box sx={{ display: "flex" }}>
-      <Navbar
-        auth={isAuthenticated}
-        open={open}
-        handleOpen={handleDrawerOpen}
-      />
-      <SideDrawer
-        open={open}
-        handleOpen={handleDrawerOpen}
-        handleClose={handleDrawerClose}
-      />
-      <Box component="main" sx={{ flexGrow: 1, p: 3 }}>
-        <DrawerHeader />
-        <PatientAptSchedule userDetails={userDetails} />
+    <>
+      <Box sx={{ display: "flex" }}>
+        <Navbar
+          auth={isAuthenticated}
+          open={open}
+          handleOpen={handleDrawerOpen}
+        />
+        <SideDrawer
+          open={open}
+          handleOpen={handleDrawerOpen}
+          handleClose={handleDrawerClose}
+        />
+        <Box component="main" sx={{ flexGrow: 1, p: 3 }}>
+          <DrawerHeader />
+          <PatientAptSchedule userDetails={userDetails} />
+        </Box>
       </Box>
-    </Box>
+    </>
   );
 }

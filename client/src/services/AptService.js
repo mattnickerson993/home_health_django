@@ -1,6 +1,7 @@
 import axios from "axios";
 import { share } from "rxjs/operators";
 import { webSocket } from "rxjs/webSocket";
+import { api } from "../api";
 
 import { getAccessToken } from "./authService";
 
@@ -28,7 +29,7 @@ export const getAvialableClinicians = () => {
 };
 
 export const createApt = (apt) => {
-  connect();
+  // connect();
   const message = {
     type: "create.apt",
     data: apt,
@@ -67,3 +68,15 @@ export const createApt = (apt) => {
 //     return { response, isError: true };
 //   }
 // };
+
+export const getAvailablePatients = async () => {
+  const url = api.appointments.availablePatients;
+  const token = getAccessToken();
+  const headers = { Authorization: `JWT ${token}` };
+  try {
+    const response = await axios.get(url, { headers });
+    return { response, isError: false };
+  } catch (response) {
+    return { response, isError: true };
+  }
+};
