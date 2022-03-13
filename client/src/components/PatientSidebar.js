@@ -43,9 +43,6 @@ export default function PatientSidebar({ isAuthenticated, userDetails }) {
     setOpen(false);
   };
 
-  const notify = () => {
-    toast("🦄 Wow so easy!");
-  };
   return (
     <>
       <Box sx={{ display: "flex" }}>

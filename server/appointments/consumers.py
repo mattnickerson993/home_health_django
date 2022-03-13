@@ -22,10 +22,8 @@ class AppointmentConsumer(AsyncJsonWebsocketConsumer):
 
     @database_sync_to_async
     def _create_appointment(self, data):
-        print('heres my data')
         serializer = AppointmentCreateSerializer(data=data)
         serializer.is_valid(raise_exception=True)
-        print('appointment created')
         return serializer.create(serializer.validated_data)
 
     @database_sync_to_async
@@ -74,14 +72,18 @@ class AppointmentConsumer(AsyncJsonWebsocketConsumer):
 
     async def search_clinicians(self):
         clinicians = await self._get_available_clinicians()
-        print('clins', clinicians)
         await self.send_json(clinicians)
     
     async def create_apt(self, content, **kwargs):
         data = content.get('data')
-        print('data', data)
         appt = await self._create_appointment(data)
         appt_data = await self._get_appointment_data(appt)
+        id = appt.get('id')
+        # add patient to apt group
+        await self.channel_layer.group_add(
+            group=id,
+            channel=self.channel_name
+        )
 
         await self.channel_layer.group_send(group='clinicians', message={
             'type': 'apt.requested.clins',
@@ -101,6 +103,14 @@ class AppointmentConsumer(AsyncJsonWebsocketConsumer):
             }
         )
 
+    async def apt_booked_msg(self, message):
+        await self.send_json(
+            {
+                'type': 'apt.booked.msg',
+                'data': message.get('data')
+            }
+        )
+
     async def schedule_appointment(self, content, **kwargs):
         data = content.get('data')
         appt = await self._create_appointment(data)
@@ -116,6 +126,24 @@ class AppointmentConsumer(AsyncJsonWebsocketConsumer):
             'type': 'echo.message',
             'data': appt_data,
         })
+
+    async def clin_book_apt(self, content, **kwargs):
+        data = content.get('data')
+        appt = await self._update_appointment(data)
+        appt_data = await self._get_appointment_data(appt)
+        # add clinician to apt group
+        await self.channel_layer.group_add(
+            group=f"{appt.id}",
+            channel=self.channel_name
+        )
+
+        await self.channel_layer.group_send(
+            group=f"{appt.id}",
+            message={
+                'type': 'apt.booked.msg',
+                'data': appt_data
+            }
+        )
 
     async def update_appointment(self, content, **kwargs):
         data = content.get('data')
@@ -162,6 +190,8 @@ class AppointmentConsumer(AsyncJsonWebsocketConsumer):
             await self.schedule_appointment(content)
         elif message_type == 'create.apt':
             await self.create_apt(content)
+        elif message_type == 'clin.book.apt':
+            await self.clin_book_apt(content)
         elif message_type == 'get.clinicians':
             await self.search_clinicians()
         elif message_type == 'update.appointment':

@@ -47,5 +47,5 @@ class AppointmentUpdateView(generics.UpdateAPIView):
 
 class AppointmentAvailablePatientView(generics.ListAPIView):
     permission_classes = [permissions.IsAuthenticated]
-    queryset = Appointment.objects.filter(status=Appointment.REQUESTED)
+    queryset = Appointment.objects.filter(status=Appointment.REQUESTED).order_by('-id')
     serializer_class = AppointmentListSerializer

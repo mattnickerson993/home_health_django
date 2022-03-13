@@ -7,12 +7,21 @@ import PatientSidebar from "../components/PatientSidebar";
 import { connect, messages } from "../services/AptService";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import { elementAcceptingRef } from "@mui/utils";
+import { ClinicianAptContext } from "../context";
+import { getAvailablePatients } from "../services/AptService";
 
 function Layout() {
   const { isAuthenticated, userDetails } = useAuthState();
   const { group } = userDetails;
   const [userMessages, setUserMessages] = React.useState([]);
+  const { clinicianApts, dispatchClinicianApts } =
+    React.useContext(ClinicianAptContext);
+
+  React.useEffect(() => {
+    if (group === "clinician") {
+      loadAvailablePatients();
+    }
+  }, [group]);
 
   React.useEffect(() => {
     connect();
@@ -21,10 +30,26 @@ function Layout() {
       if (message.type === "apt.requested.success") {
         toast.success("Your Appointment has been requested");
       } else if (message.type === "apt.requested.clins") {
+        console.log("msg", message);
+        dispatchClinicianApts({
+          type: "ADD_APPOINTMENT",
+          payload: message.data,
+        });
         const {
           patient: { first_name, last_name },
         } = message.data;
         toast.info(`${first_name} ${last_name} has requested an appointment`);
+      } else if (message.type === "apt.booked.msg") {
+        const {
+          patient: {
+            first_name: patient_first_name,
+            last_name: patient_last_name,
+          },
+          clinician: { first_name: clin_first_name, last_name: clin_last_name },
+        } = message.data;
+        toast.info(
+          `${clin_first_name} ${clin_last_name} has booked an appointment with ${patient_first_name} ${patient_last_name} `
+        );
       }
     });
     console.log("websocket connected");
@@ -34,6 +59,11 @@ function Layout() {
       }
     };
   }, []);
+
+  const loadAvailablePatients = async () => {
+    const { response, isError } = await getAvailablePatients();
+    dispatchClinicianApts({ type: "ADD_APPOINTMENTS", payload: response.data });
+  };
 
   return (
     <>

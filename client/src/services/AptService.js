@@ -3,7 +3,7 @@ import { share } from "rxjs/operators";
 import { webSocket } from "rxjs/webSocket";
 import { api } from "../api";
 
-import { getAccessToken } from "./authService";
+import { getAccessToken, getUser } from "./authService";
 
 let _socket;
 export let messages;
@@ -34,6 +34,20 @@ export const createApt = (apt) => {
     type: "create.apt",
     data: apt,
   };
+  _socket.next(message);
+};
+
+export const clinBookApt = (apt_id) => {
+  const { id: clinician_id } = getUser();
+  const message = {
+    type: "clin.book.apt",
+    data: {
+      id: apt_id,
+      clinician: clinician_id,
+      status: "SCHEDULED",
+    },
+  };
+  console.log("messge", message);
   _socket.next(message);
 };
 // export const createTrip = (trip) => {
