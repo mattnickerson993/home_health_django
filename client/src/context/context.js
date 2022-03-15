@@ -9,6 +9,8 @@ import {
   AuthReducer,
   ClinicianAppointmentReducer,
   initialClinicianAptState,
+  ClinSchedAptReducer,
+  initClinSchedAptState,
 } from "./reducer";
 
 export const AuthContext = React.createContext();
@@ -31,9 +33,19 @@ export const ClinicianAptProvider = ({ children }) => {
     initialClinicianAptState
   );
 
+  const [clinschedapts, dispatchClinSchedApts] = React.useReducer(
+    ClinSchedAptReducer,
+    initialClinicianAptState
+  );
+
   return (
     <ClinicianAptContext.Provider
-      value={{ clinicianApts, dispatchClinicianApts }}
+      value={{
+        clinicianApts,
+        dispatchClinicianApts,
+        clinschedapts,
+        dispatchClinSchedApts,
+      }}
     >
       {children}
     </ClinicianAptContext.Provider>

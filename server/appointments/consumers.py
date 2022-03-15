@@ -78,10 +78,10 @@ class AppointmentConsumer(AsyncJsonWebsocketConsumer):
         data = content.get('data')
         appt = await self._create_appointment(data)
         appt_data = await self._get_appointment_data(appt)
-        id = appt.get('id')
+        id = appt.id
         # add patient to apt group
         await self.channel_layer.group_add(
-            group=id,
+            group=f"{id}",
             channel=self.channel_name
         )
 

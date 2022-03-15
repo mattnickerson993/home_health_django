@@ -10,14 +10,19 @@ const AvailablePatients = () => {
   return (
     <div>
       <Grid container spacing={4}>
-        {appointments &&
+        {appointments && appointments.length ? (
           appointments.map((apt) => (
             <>
               <Grid item xs={8}>
                 <AptCard apt={apt} />
               </Grid>
             </>
-          ))}
+          ))
+        ) : (
+          <Grid item xs={8}>
+            <h1>No patients are currently available</h1>
+          </Grid>
+        )}
       </Grid>
     </div>
   );

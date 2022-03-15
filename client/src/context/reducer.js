@@ -1,3 +1,4 @@
+import { sample } from "rxjs/operators";
 import { getUser, removeUser } from "../services/authService";
 import { setLocalStorage } from "../utils/storage";
 
@@ -139,7 +140,7 @@ export const AuthReducer = (state, action) => {
   }
 };
 
-// clinician apts
+// clinician avialable apts
 
 export const initialClinicianAptState = {
   appointments: null,
@@ -160,8 +161,34 @@ export const ClinicianAppointmentReducer = (state, action) => {
         appointments: [action.payload, ...state.appointments],
       };
     }
+    case "REMOVE_APPOINTMENT": {
+      return {
+        ...state,
+        appointments: state.appointments.filter(
+          (apt) => apt.id !== action.payload.id
+        ),
+      };
+    }
     default: {
       return state;
+    }
+  }
+};
+
+// clinician scheduled apts
+
+export const initClinSchedAptState = {
+  clinschedapts: null,
+  loading: true,
+};
+
+export const ClinSchedAptReducer = (state, action) => {
+  switch (action.type) {
+    case "ADD_APPOINTMENTS": {
+      return {
+        clinschedapts: action.payload,
+        loading: false,
+      };
     }
   }
 };

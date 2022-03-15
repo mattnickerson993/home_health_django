@@ -3,12 +3,18 @@ import React from "react";
 import AddIcon from "@mui/icons-material/Add";
 import { red } from "@mui/material/colors";
 import { clinBookApt } from "../../services/AptService";
+import { ClinicianAptContext } from "../../context";
 
 const AptCard = ({ apt }) => {
   const { id: apt_id, patient, patient_address } = apt;
+  const { dispatchClinicianApts } = React.useContext(ClinicianAptContext);
 
   async function bookApt(apt_id) {
     await clinBookApt(apt_id);
+    dispatchClinicianApts({
+      type: "REMOVE_APPOINTMENT",
+      payload: { id: apt_id },
+    });
   }
 
   return (
