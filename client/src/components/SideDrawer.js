@@ -68,7 +68,7 @@ const Drawer = styled(MuiDrawer, {
   }),
 }));
 
-const SideDrawer = ({ open, handleOpen, handleClose }) => {
+const SideDrawer = ({ open, handleOpen, handleClose, sideBarFields }) => {
   const theme = useTheme();
 
   return (
@@ -84,12 +84,10 @@ const SideDrawer = ({ open, handleOpen, handleClose }) => {
       </DrawerHeader>
       <Divider />
       <List>
-        {["Inbox", "Starred", "Send email", "Drafts"].map((text, index) => (
-          <ListItem button key={text}>
-            <ListItemIcon>
-              {index % 2 === 0 ? <InboxIcon /> : <MailIcon />}
-            </ListItemIcon>
-            <ListItemText primary={text} />
+        {sideBarFields.map((field, index) => (
+          <ListItem button key={field.text}>
+            <ListItemIcon>{field.icon}</ListItemIcon>
+            <ListItemText primary={field.text} />
           </ListItem>
         ))}
       </List>

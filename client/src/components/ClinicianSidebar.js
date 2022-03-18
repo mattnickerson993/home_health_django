@@ -9,18 +9,14 @@ import Typography from "@mui/material/Typography";
 import Divider from "@mui/material/Divider";
 import IconButton from "@mui/material/IconButton";
 import MenuIcon from "@mui/icons-material/Menu";
-import ChevronLeftIcon from "@mui/icons-material/ChevronLeft";
-import ChevronRightIcon from "@mui/icons-material/ChevronRight";
-import ListItem from "@mui/material/ListItem";
-import ListItemIcon from "@mui/material/ListItemIcon";
-import ListItemText from "@mui/material/ListItemText";
-import InboxIcon from "@mui/icons-material/MoveToInbox";
-import MailIcon from "@mui/icons-material/Mail";
+import StarBorder from "@mui/icons-material/StarBorder";
+import PeopleOutline from "@mui/icons-material/PeopleOutline";
 import useAuthState from "../hooks/useAuthState";
 import Navbar from "./Navbar";
-import SideDrawer from "./Drawer";
+import SideDrawer from "./SideDrawer";
 import PatientAptSchedule from "./PatientAptSchedule";
 import AvailablePatients from "./clinician/AvailablePatients";
+import { Beenhere, Chat } from "@mui/icons-material";
 
 const DrawerHeader = styled("div")(({ theme }) => ({
   display: "flex",
@@ -34,6 +30,12 @@ const DrawerHeader = styled("div")(({ theme }) => ({
 export default function ClinicianSidebar({ isAuthenticated, userDetails }) {
   const theme = useTheme();
   const [open, setOpen] = React.useState(false);
+  const sideBarFields = [
+    { text: "Available Patients", icon: <PeopleOutline /> },
+    { text: "Active Appointments", icon: <StarBorder /> },
+    { text: "Past Appointments", icon: <Beenhere /> },
+    { text: "Chat", icon: <Chat /> },
+  ];
 
   const handleDrawerOpen = () => {
     setOpen(true);
@@ -54,6 +56,7 @@ export default function ClinicianSidebar({ isAuthenticated, userDetails }) {
         open={open}
         handleOpen={handleDrawerOpen}
         handleClose={handleDrawerClose}
+        sideBarFields={sideBarFields}
       />
       <Box component="main" sx={{ flexGrow: 1, p: 3 }}>
         <DrawerHeader />
