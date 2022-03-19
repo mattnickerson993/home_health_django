@@ -16,8 +16,7 @@ import ListItemIcon from "@mui/material/ListItemIcon";
 import ListItemText from "@mui/material/ListItemText";
 import InboxIcon from "@mui/icons-material/MoveToInbox";
 import MailIcon from "@mui/icons-material/Mail";
-import useAuthState from "../hooks/useAuthState";
-import Navbar from "./Navbar";
+import { ListItemButton } from "@mui/material";
 
 const drawerWidth = 240;
 
@@ -70,6 +69,7 @@ const Drawer = styled(MuiDrawer, {
 
 const SideDrawer = ({ open, handleOpen, handleClose, sideBarFields }) => {
   const theme = useTheme();
+  const [active, setActive] = React.useState("Available Patients");
 
   return (
     <Drawer variant="permanent" open={open}>
@@ -84,12 +84,28 @@ const SideDrawer = ({ open, handleOpen, handleClose, sideBarFields }) => {
       </DrawerHeader>
       <Divider />
       <List>
-        {sideBarFields.map((field, index) => (
-          <ListItem button key={field.text}>
-            <ListItemIcon>{field.icon}</ListItemIcon>
-            <ListItemText primary={field.text} />
-          </ListItem>
-        ))}
+        {sideBarFields.map((field, index) =>
+          field.text === active ? (
+            <ListItemButton
+              onClick={() => setActive(field.text)}
+              selected
+              button
+              key={field.text}
+            >
+              <ListItemIcon>{field.icon}</ListItemIcon>
+              <ListItemText primary={field.text} />
+            </ListItemButton>
+          ) : (
+            <ListItemButton
+              onClick={() => setActive(field.text)}
+              button
+              key={field.text}
+            >
+              <ListItemIcon>{field.icon}</ListItemIcon>
+              <ListItemText primary={field.text} />
+            </ListItemButton>
+          )
+        )}
       </List>
       <Divider />
       <List>

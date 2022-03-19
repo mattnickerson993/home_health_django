@@ -19,6 +19,7 @@ import { AuthContext } from "../context";
 import { Navigate } from "react-router-dom";
 import { styled, useTheme } from "@mui/material/styles";
 import MuiAppBar from "@mui/material/AppBar";
+import ChevronRight from "@mui/icons-material/ChevronRight";
 
 const drawerWidth = 240;
 
@@ -91,7 +92,8 @@ const Navbar = ({ auth, open, handleOpen }) => {
               ...(open && { display: "none" }),
             }}
           >
-            <MenuIcon />
+            {/* <MenuIcon /> */}
+            <ChevronRight />
           </IconButton>
 
           <Typography variant="h6" sx={{ marginLeft: "1em" }}>

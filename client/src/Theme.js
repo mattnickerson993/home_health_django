@@ -1,17 +1,33 @@
-import { blue, teal, red} from '@mui/material/colors';
-import { createTheme } from '@mui/material'
- 
+import { blue, teal, red } from "@mui/material/colors";
+import { createTheme } from "@mui/material";
+import { palette } from "@mui/system";
+
+const colors = {
+  primary: blue[500],
+  secondary: teal[500],
+  error: red[500],
+};
 export const darkTheme = createTheme({
-      palette: {
-          type: "dark",
-          primary: {
-              main: blue[500],
+  palette: {
+    primary: {
+      main: colors.primary,
+    },
+    secondary: {
+      main: colors.secondary,
+    },
+    error: {
+      main: colors.error,
+    },
+  },
+  components: {
+    MuiListItemButton: {
+      styleOverrides: {
+        root: {
+          "&.Mui-selected": {
+            borderLeft: `5px solid ${colors.primary}`,
           },
-          secondary:{
-            main: teal[500],
-          },
-          error:{
-            main: red[500],
-          },
-      }
-    })
+        },
+      },
+    },
+  },
+});
