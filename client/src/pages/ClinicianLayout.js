@@ -11,6 +11,7 @@ function ClinicianLayout({ isAuthenticated, userDetails }) {
     React.useContext(ClinicianAptContext);
 
   React.useEffect(() => {
+    console.log("loading patients");
     loadAvailablePatients();
   }, []);
 

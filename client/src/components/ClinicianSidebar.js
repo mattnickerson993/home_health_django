@@ -17,6 +17,7 @@ import SideDrawer from "./SideDrawer";
 import PatientAptSchedule from "./PatientAptSchedule";
 import AvailablePatients from "./clinician/AvailablePatients";
 import { Beenhere, Chat } from "@mui/icons-material";
+import { Outlet } from "react-router-dom";
 
 const DrawerHeader = styled("div")(({ theme }) => ({
   display: "flex",
@@ -60,7 +61,7 @@ export default function ClinicianSidebar({ isAuthenticated, userDetails }) {
       />
       <Box component="main" sx={{ flexGrow: 1, p: 3 }}>
         <DrawerHeader />
-        <AvailablePatients />
+        <Outlet />
       </Box>
     </Box>
   );

@@ -17,6 +17,7 @@ import ListItemText from "@mui/material/ListItemText";
 import InboxIcon from "@mui/icons-material/MoveToInbox";
 import MailIcon from "@mui/icons-material/Mail";
 import { ListItemButton } from "@mui/material";
+import { Navigate, useNavigate } from "react-router-dom";
 
 const drawerWidth = 240;
 
@@ -67,9 +68,27 @@ const Drawer = styled(MuiDrawer, {
   }),
 }));
 
+const navMap = {
+  "Available Patients": "/",
+  "Active Appointments": "/clinician_active_apts",
+  "Past Appointments": "/clinician_past_apts",
+  Chat: "/clinician_chat",
+  "Schedule Appointment": "/",
+  "My Appointments": "/patient_my_apts",
+  "My Past Appointments": "/patient_my_past_apts",
+  "Patient Chat": "patient_chat",
+};
+
 const SideDrawer = ({ open, handleOpen, handleClose, sideBarFields }) => {
   const theme = useTheme();
-  const [active, setActive] = React.useState("Available Patients");
+  const [active, setActive] = React.useState();
+  const [nav, setNav] = React.useState(null);
+  let navigate = useNavigate();
+  function handleClick(text) {
+    setActive(text);
+    const loc = navMap[text];
+    navigate(`${loc}`);
+  }
 
   return (
     <Drawer variant="permanent" open={open}>
@@ -87,7 +106,7 @@ const SideDrawer = ({ open, handleOpen, handleClose, sideBarFields }) => {
         {sideBarFields.map((field, index) =>
           field.text === active ? (
             <ListItemButton
-              onClick={() => setActive(field.text)}
+              onClick={() => handleClick(field.text)}
               selected
               button
               key={field.text}
@@ -97,7 +116,7 @@ const SideDrawer = ({ open, handleOpen, handleClose, sideBarFields }) => {
             </ListItemButton>
           ) : (
             <ListItemButton
-              onClick={() => setActive(field.text)}
+              onClick={() => handleClick(field.text)}
               button
               key={field.text}
             >
