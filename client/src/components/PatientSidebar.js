@@ -3,8 +3,11 @@ import { styled, useTheme } from "@mui/material/styles";
 import Box from "@mui/material/Box";
 import Navbar from "./Navbar";
 import SideDrawer from "./SideDrawer";
-import PatientAptSchedule from "./PatientAptSchedule";
-import { toast, ToastContainer } from "react-toastify";
+import { Outlet } from "react-router-dom";
+import { Beenhere, Chat } from "@mui/icons-material";
+import StarBorder from "@mui/icons-material/StarBorder";
+import PeopleOutline from "@mui/icons-material/PeopleOutline";
+import PatientAptSchedule from "./patient/PatientAptSchedule";
 
 const DrawerHeader = styled("div")(({ theme }) => ({
   display: "flex",
@@ -14,10 +17,15 @@ const DrawerHeader = styled("div")(({ theme }) => ({
   // necessary for content to be below app bar
   ...theme.mixins.toolbar,
 }));
-
 export default function PatientSidebar({ isAuthenticated, userDetails }) {
   const theme = useTheme();
   const [open, setOpen] = React.useState(false);
+  const sideBarFields = [
+    { text: "Schedule Appointment", icon: <PeopleOutline /> },
+    { text: "My Appointments", icon: <StarBorder /> },
+    { text: "My Past Appointments", icon: <Beenhere /> },
+    { text: "Patient Chat", icon: <Chat /> },
+  ];
 
   const handleDrawerOpen = () => {
     setOpen(true);
@@ -39,10 +47,11 @@ export default function PatientSidebar({ isAuthenticated, userDetails }) {
           open={open}
           handleOpen={handleDrawerOpen}
           handleClose={handleDrawerClose}
+          sideBarFields={sideBarFields}
         />
         <Box component="main" sx={{ flexGrow: 1, p: 3 }}>
           <DrawerHeader />
-          <PatientAptSchedule userDetails={userDetails} />
+          <Outlet />
         </Box>
       </Box>
     </>

@@ -1,10 +1,9 @@
-import { sample } from "rxjs/operators";
 import { getUser, removeUser } from "../services/authService";
 import { setLocalStorage } from "../utils/storage";
 
 export const initialState = {
   userDetails: getUser(),
-  isAuthenticated: getUser && true,
+  isAuthenticated: getUser() && true,
   errorMessage: "",
   loading: false,
 };

@@ -11,6 +11,8 @@ function PatientLayout({ isAuthenticated, userDetails }) {
       console.log("msg", message);
       if (message.type === "apt.requested.success") {
         toast.success("Your Appointment has been requested");
+      } else if (message.type === "apt.requested.fail") {
+        toast.error(`${message.msg}`);
       } else if (message.type === "apt.booked.msg") {
         const {
           clinician: { first_name: clin_first_name, last_name: clin_last_name },
