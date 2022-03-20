@@ -7,14 +7,13 @@ import {
   Typography,
 } from "@mui/material";
 import React from "react";
-import { errorIcon, validIcon } from "../components/Icons";
+import { errorIcon, validIcon } from "../Icons";
 import { useForm } from "react-hook-form";
-import { createApt } from "../services/AptService";
+import { createApt } from "../../services/AptService";
 
-const PatientAptForm = ({ patientId }) => {
+const PatientAptForm = ({ setForm, patientId }) => {
   const [loading, setLoading] = React.useState(false);
   const [error, setError] = React.useState(null);
-  const [accountCreated, setAccountCreated] = React.useState(false);
 
   const {
     register,
@@ -32,12 +31,18 @@ const PatientAptForm = ({ patientId }) => {
       patient: patientId,
     };
     createApt(formData);
+    setTimeout(() => {
+      setLoading(false);
+      setForm(false);
+    }, 2000);
   }
   return (
     <article>
       <Card>
         <CardContent>
-          <Typography variant="h2">Please Enter your address below</Typography>
+          <Typography variant="h4">
+            Please enter the address you want to receive treatment at below
+          </Typography>
           <form onSubmit={handleSubmit(onSubmit)} action="">
             <TextField
               name="patient_address"
@@ -47,9 +52,9 @@ const PatientAptForm = ({ patientId }) => {
                 maxLength: 255,
               })}
               InputProps={{
-                endAdornment: errors.email
+                endAdornment: errors.patient_address
                   ? errorIcon
-                  : touchedFields.email && validIcon,
+                  : touchedFields.patient_address && validIcon,
               }}
               fullWidth
               variant="filled"

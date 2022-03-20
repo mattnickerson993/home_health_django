@@ -3,12 +3,11 @@ import { styled, useTheme } from "@mui/material/styles";
 import Box from "@mui/material/Box";
 import Navbar from "./Navbar";
 import SideDrawer from "./SideDrawer";
-import PatientAptSchedule from "./PatientAptSchedule";
-import { toast, ToastContainer } from "react-toastify";
 import { Outlet } from "react-router-dom";
 import { Beenhere, Chat } from "@mui/icons-material";
 import StarBorder from "@mui/icons-material/StarBorder";
 import PeopleOutline from "@mui/icons-material/PeopleOutline";
+import PatientAptSchedule from "./patient/PatientAptSchedule";
 
 const DrawerHeader = styled("div")(({ theme }) => ({
   display: "flex",

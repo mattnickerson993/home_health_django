@@ -1,4 +1,3 @@
-import { sample } from "rxjs/operators";
 import { getUser, removeUser } from "../services/authService";
 import { setLocalStorage } from "../utils/storage";
 

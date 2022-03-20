@@ -50,6 +50,33 @@ class AppointmentConsumer(AsyncJsonWebsocketConsumer):
             apts = user.apts_as_clin.all()
         return [str(apt.id) for apt in apts]
 
+    @database_sync_to_async
+    def _check_apt_valid(self, user):
+        # patient cant asked for another appointment when one is not resolved
+        current_apts = Appointment.objects.filter(patient_id=user.id, status__in=[
+            Appointment.REQUESTED,
+            Appointment.IN_PROGRESS,
+            Appointment.SCHEDULED,
+            Appointment.STARTED
+        ]).count()
+        if current_apts > 0:
+            return False
+        else:
+            return True
+    
+    @database_sync_to_async
+    def _check_clin_apt_valid(self, user):
+        # patient cant asked for another appointment when one is not resolved
+        current_apts = Appointment.objects.filter(clinician_id=user.id, status__in=[
+            Appointment.IN_PROGRESS,
+            Appointment.SCHEDULED,
+            Appointment.STARTED
+        ]).count()
+        if current_apts > 0:
+            return False
+        else:
+            return True
+
     async def connect(self):
         user = self.scope['user']
 
@@ -73,9 +100,17 @@ class AppointmentConsumer(AsyncJsonWebsocketConsumer):
     async def search_clinicians(self):
         clinicians = await self._get_available_clinicians()
         await self.send_json(clinicians)
-    
+
     async def create_apt(self, content, **kwargs):
         data = content.get('data')
+        valid = await self._check_apt_valid(self.scope['user'])
+        if not valid:
+            await self.send_json({
+                'type': 'apt.requested.fail',
+                'msg': 'You must complete your current appointment before asking for another'
+            })
+            return
+
         appt = await self._create_appointment(data)
         appt_data = await self._get_appointment_data(appt)
         id = appt.id
@@ -129,6 +164,15 @@ class AppointmentConsumer(AsyncJsonWebsocketConsumer):
 
     async def clin_book_apt(self, content, **kwargs):
         data = content.get('data')
+        valid = await self._check_clin_apt_valid(self.scope['user'])
+        if not valid:
+            print('not valid')
+            await self.send_json({
+                'type': 'apt.requested.fail',
+                'msg': 'You must complete your current appointment before booking another'
+            })
+            return
+
         appt = await self._update_appointment(data)
         appt_data = await self._get_appointment_data(appt)
         # add clinician to apt group

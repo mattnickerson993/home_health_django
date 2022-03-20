@@ -11,12 +11,14 @@ const PatientAptSchedule = ({ userDetails }) => {
 
   return (
     <>
-      <div>{`Welcome Patient ${first_name} ${last_name}`}</div>
-      <div> Need an Appointment ?</div>
+      <div>{`Welcome${first_name} ${last_name}`}</div>
+      <div> Need an Appointment?</div>
       <Button onClick={() => setDisplayForm(true)} variant="contained">
-        Find me a Clinician
+        Find me a Clinician Now
       </Button>
-      {displayForm && <PatientAptForm patientId={id} />}
+      {displayForm && (
+        <PatientAptForm setForm={setDisplayForm} patientId={id} />
+      )}
     </>
   );
 };

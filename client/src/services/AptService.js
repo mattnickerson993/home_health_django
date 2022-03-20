@@ -47,7 +47,6 @@ export const clinBookApt = (apt_id) => {
       status: "SCHEDULED",
     },
   };
-  console.log("messge", message);
   _socket.next(message);
 };
 // export const createTrip = (trip) => {
