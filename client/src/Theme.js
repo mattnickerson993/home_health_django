@@ -9,6 +9,7 @@ const colors = {
 };
 export const darkTheme = createTheme({
   palette: {
+    mode: "dark",
     primary: {
       main: colors.primary,
     },

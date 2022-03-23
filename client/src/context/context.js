@@ -35,7 +35,7 @@ export const ClinicianAptProvider = ({ children }) => {
 
   const [clinschedapts, dispatchClinSchedApts] = React.useReducer(
     ClinSchedAptReducer,
-    initialClinicianAptState
+    initClinSchedAptState
   );
 
   return (

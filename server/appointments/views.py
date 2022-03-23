@@ -15,7 +15,9 @@ class AppointmentListView(generics.ListAPIView):
     serializer_class = AppointmentListSerializer
 
     def get_queryset(self):
-        return Appointment.objects.all()
+        user = self.request.user
+        status = self.request.query_params.get('status')
+        return Appointment.objects.filter(clinician_id=user.id, status=status)
 
 
 class AppointmentCreateView(generics.CreateAPIView):

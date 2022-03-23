@@ -17,6 +17,12 @@ export const api = {
   },
   appointments: {
     availablePatients: `${baseURL}/api/v1/appointments/available_patients`,
+    scheduledApts: (apt_status) =>
+      `${baseURL}/api/v1/appointments?status=${apt_status}`,
+  },
+  messages: {
+    aptMessages: (apt_id) =>
+      `${baseURL}/api/v1/messages/apt_messages/${apt_id}/`,
   },
   //     patients: {
   //         list: `${baseURL}/api/v1/patients/`,
