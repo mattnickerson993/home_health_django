@@ -41,6 +41,7 @@ INSTALLED_APPS = [
 
     # local
     'appointments',
+    'apt_messages',
     'trips',
     'users',
 ]

@@ -93,3 +93,15 @@ export const getAvailablePatients = async () => {
     return { response, isError: true };
   }
 };
+
+export const getAptMessages = async (apt_id) => {
+  const url = api.messages.aptMessages(apt_id);
+  const token = getAccessToken();
+  const headers = { Authorization: `JWT ${token}` };
+  try {
+    const response = await axios.get(url, { headers });
+    return { response, isError: false };
+  } catch (response) {
+    return { response, isError: true };
+  }
+};
