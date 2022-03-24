@@ -1,18 +1,19 @@
 import React from "react";
 import ClinicianSidebar from "../components/ClinicianSidebar";
-import { connect, messages } from "../services/AptService";
+import { connect, getClinSchedApts, messages } from "../services/AptService";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { ClinicianAptContext } from "../context";
 import { getAvailablePatients } from "../services/AptService";
 
 function ClinicianLayout({ isAuthenticated, userDetails }) {
-  const { clinicianApts, dispatchClinicianApts } =
+  const { clinicianApts, dispatchClinicianApts, dispatchClinSchedApts } =
     React.useContext(ClinicianAptContext);
 
   React.useEffect(() => {
     console.log("loading patients");
     loadAvailablePatients();
+    loadScheduledAppointments();
   }, []);
 
   React.useEffect(() => {
@@ -58,6 +59,11 @@ function ClinicianLayout({ isAuthenticated, userDetails }) {
   const loadAvailablePatients = async () => {
     const { response, isError } = await getAvailablePatients();
     dispatchClinicianApts({ type: "ADD_APPOINTMENTS", payload: response.data });
+  };
+
+  const loadScheduledAppointments = async () => {
+    const { response, isError } = await getClinSchedApts("SCHEDULED");
+    dispatchClinSchedApts({ type: "ADD_APPOINTMENTS", payload: response.data });
   };
 
   return (

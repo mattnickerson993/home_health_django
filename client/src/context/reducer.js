@@ -1,3 +1,4 @@
+import { getClinSchedApts } from "../services/AptService";
 import { getUser, removeUser } from "../services/authService";
 import { setLocalStorage } from "../utils/storage";
 
@@ -188,6 +189,16 @@ export const ClinSchedAptReducer = (state, action) => {
         clinschedapts: action.payload,
         loading: false,
       };
+    }
+    case "ADD_APPOINTMENT": {
+      return {
+        ...state,
+        clinschedapts: [action.payload, ...state.clinschedapts],
+      };
+    }
+
+    default: {
+      return state;
     }
   }
 };

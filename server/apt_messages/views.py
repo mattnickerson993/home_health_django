@@ -1,5 +1,7 @@
 from rest_framework import generics, permissions
 
+from server.appointments.models import Appointment
+
 from .models import AptMessages
 from .serializers import MessageSerializer
 

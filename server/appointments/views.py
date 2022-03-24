@@ -16,6 +16,7 @@ class AppointmentListView(generics.ListAPIView):
 
     def get_queryset(self):
         user = self.request.user
+        print('user', user)
         status = self.request.query_params.get('status')
         return Appointment.objects.filter(clinician_id=user.id, status=status)
 

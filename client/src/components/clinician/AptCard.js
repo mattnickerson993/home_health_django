@@ -7,7 +7,8 @@ import { ClinicianAptContext } from "../../context";
 
 const AptCard = ({ apt }) => {
   const { id: apt_id, patient, patient_address } = apt;
-  const { dispatchClinicianApts } = React.useContext(ClinicianAptContext);
+  const { dispatchClinicianApts, dispatchClinSchedApts } =
+    React.useContext(ClinicianAptContext);
 
   async function bookApt(apt_id) {
     await clinBookApt(apt_id);
@@ -15,6 +16,10 @@ const AptCard = ({ apt }) => {
     //   type: "REMOVE_APPOINTMENT",
     //   payload: { id: apt_id },
     // });
+    dispatchClinSchedApts({
+      type: "ADD_APPOINTMENT",
+      payload: { id: apt_id },
+    });
   }
 
   return (

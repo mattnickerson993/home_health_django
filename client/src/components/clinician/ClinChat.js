@@ -17,12 +17,25 @@ import {
 import SendIcon from "@mui/icons-material/Send";
 import { Chat } from "@mui/icons-material";
 import { ClinicianAptContext } from "../../context";
+import { getAptMessages } from "../../services/AptService";
 
 const ClinChat = () => {
   const {
-    clinicianApts: { appointments },
+    clinschedapts: { clinschedapts, loading },
   } = React.useContext(ClinicianAptContext);
-  console.log("apts", appointments);
+
+  React.useEffect(() => {
+    if (loading) {
+      return;
+    }
+    console.log("apts", clinschedapts);
+    // loadMessages(clinschedapts[0].id);
+  }, [loading]);
+
+  const loadMessages = async (apt_id) => {
+    const { response, isError } = await getAptMessages(apt_id);
+    console.log("res", response);
+  };
   return (
     <>
       <Paper
