@@ -1,14 +1,22 @@
 import React from "react";
 import ClinicianSidebar from "../components/ClinicianSidebar";
-import { connect, getClinSchedApts, messages } from "../services/AptService";
+import {
+  connect,
+  getAptMessages,
+  getClinMessages,
+  getClinSchedApts,
+  messages,
+} from "../services/AptService";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import { ClinicianAptContext } from "../context";
+import { ClinicianAptContext, ChatMessageContext } from "../context";
 import { getAvailablePatients } from "../services/AptService";
 
 function ClinicianLayout({ isAuthenticated, userDetails }) {
   const { clinicianApts, dispatchClinicianApts, dispatchClinSchedApts } =
     React.useContext(ClinicianAptContext);
+  const { clinicianChatMessages, dispatchClinicianChatMessages } =
+    React.useContext(ChatMessageContext);
 
   React.useEffect(() => {
     console.log("loading patients");
@@ -63,7 +71,15 @@ function ClinicianLayout({ isAuthenticated, userDetails }) {
 
   const loadScheduledAppointments = async () => {
     const { response, isError } = await getClinSchedApts("SCHEDULED");
+    const apt_id = response?.data[0]?.id;
     dispatchClinSchedApts({ type: "ADD_APPOINTMENTS", payload: response.data });
+    if (apt_id) {
+      const { response, isError } = await getAptMessages(apt_id);
+      dispatchClinicianChatMessages({
+        type: "ADD_MESSAGES",
+        payload: response.data,
+      });
+    }
   };
 
   return (

@@ -16,26 +16,16 @@ import {
 } from "@mui/material";
 import SendIcon from "@mui/icons-material/Send";
 import { Chat } from "@mui/icons-material";
-import { ClinicianAptContext } from "../../context";
+import { ChatMessageContext } from "../../context";
 import { getAptMessages } from "../../services/AptService";
 
 const ClinChat = () => {
   const {
-    clinschedapts: { clinschedapts, loading },
-  } = React.useContext(ClinicianAptContext);
+    clinicianChatMessages: { chatMessages },
+    dispatchClinicianChatMessages,
+  } = React.useContext(ChatMessageContext);
+  console.log("msgs", chatMessages);
 
-  React.useEffect(() => {
-    if (loading) {
-      return;
-    }
-    console.log("apts", clinschedapts);
-    // loadMessages(clinschedapts[0].id);
-  }, [loading]);
-
-  const loadMessages = async (apt_id) => {
-    const { response, isError } = await getAptMessages(apt_id);
-    console.log("res", response);
-  };
   return (
     <>
       <Paper

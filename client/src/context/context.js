@@ -11,6 +11,8 @@ import {
   initialClinicianAptState,
   ClinSchedAptReducer,
   initClinSchedAptState,
+  ClinicianChatMessageReducer,
+  initialClinChatMsgState,
 } from "./reducer";
 
 export const AuthContext = React.createContext();
@@ -49,5 +51,19 @@ export const ClinicianAptProvider = ({ children }) => {
     >
       {children}
     </ClinicianAptContext.Provider>
+  );
+};
+
+export const ChatMessageContext = React.createContext();
+
+export const ChatMessageProvider = ({ children }) => {
+  const [clinicianChatMessages, dispatchClinicianChatMessages] =
+    React.useReducer(ClinicianChatMessageReducer, initialClinChatMsgState);
+  return (
+    <ChatMessageContext.Provider
+      value={{ clinicianChatMessages, dispatchClinicianChatMessages }}
+    >
+      {children}
+    </ChatMessageContext.Provider>
   );
 };

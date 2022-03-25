@@ -22,7 +22,7 @@ export const api = {
   },
   messages: {
     aptMessages: (apt_id) =>
-      `${baseURL}/api/v1/messages/apt_messages/${apt_id}/`,
+      `${baseURL}/api/v1/apt_messages/messages/${apt_id}`,
   },
   //     patients: {
   //         list: `${baseURL}/api/v1/patients/`,

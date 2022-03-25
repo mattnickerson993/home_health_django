@@ -202,3 +202,29 @@ export const ClinSchedAptReducer = (state, action) => {
     }
   }
 };
+
+export const initialClinChatMsgState = {
+  chatMessages: null,
+  loading: true,
+};
+
+export const ClinicianChatMessageReducer = (state, action) => {
+  switch (action.type) {
+    case "ADD_MESSAGES": {
+      return {
+        chatMessages: action.payload,
+        loading: false,
+      };
+    }
+    case "ADD_MESSAGE": {
+      return {
+        ...state,
+        chatMessages: [action.payload, ...state.message],
+      };
+    }
+
+    default: {
+      return state;
+    }
+  }
+};
