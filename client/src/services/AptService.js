@@ -37,6 +37,15 @@ export const createApt = (apt) => {
   _socket.next(message);
 };
 
+export const sendNewChatMsg = (msg, apt_id) => {
+  const message = {
+    type: "create.new_chat_msg",
+    data: { appointment: apt_id, content: msg },
+  };
+  console.log("msg", message);
+  _socket.next(message);
+};
+
 export const clinBookApt = (apt_id) => {
   const { id: clinician_id } = getUser();
   const message = {

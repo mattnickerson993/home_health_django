@@ -36,6 +36,11 @@ function ClinicianLayout({ isAuthenticated, userDetails }) {
           patient: { first_name, last_name },
         } = message.data;
         toast.info(`${first_name} ${last_name} has requested an appointment`);
+      } else if (message.type === "chat.message.created") {
+        dispatchClinicianChatMessages({
+          type: "ADD_MESSAGE",
+          payload: message.data,
+        });
       } else if (message.type === "apt.requested.fail") {
         toast.error(`${message.msg}`);
       } else if (message.type === "apt.booked.msg") {

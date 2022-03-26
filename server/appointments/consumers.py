@@ -1,4 +1,3 @@
-from pydoc import cli
 from django.contrib.auth import get_user_model
 from django.shortcuts import get_object_or_404
 
@@ -6,8 +5,11 @@ from channels.db import database_sync_to_async
 from channels.generic.websocket import AsyncJsonWebsocketConsumer
 
 from appointments.models import Appointment
+from apt_messages.models import AptMessages
 from users.serializers import UserListSerializer
 from .serializers import AppointmentCreateSerializer, AppointmentUpdateSerializer, NestedAppointmentSerializer
+from apt_messages.serializers import MessageCreateSerializer, MessageSerializer
+
 
 User = get_user_model()
 
@@ -49,6 +51,16 @@ class AppointmentConsumer(AsyncJsonWebsocketConsumer):
         elif 'clinician' in user_groups:
             apts = user.apts_as_clin.all()
         return [str(apt.id) for apt in apts]
+    
+    @database_sync_to_async
+    def _create_chat_msg(self, data):
+        serializer = MessageCreateSerializer(data=data)
+        serializer.is_valid(raise_exception=True)
+        return serializer.create(serializer.validated_data)
+
+    @database_sync_to_async
+    def _get_chat_msg(self, msg):
+        return MessageSerializer(msg).data
 
     @database_sync_to_async
     def _check_apt_valid(self, user):
@@ -146,6 +158,31 @@ class AppointmentConsumer(AsyncJsonWebsocketConsumer):
             }
         )
 
+    async def create_new_chat_msg(self, content, **kwargs):
+        user = self.scope['user']
+        data = content.get('data')
+        data.update({'author': user.id})
+        msg = await self._create_chat_msg(data)
+        msg_data = await self._get_chat_msg(msg)
+
+        await self.channel_layer.group_send(
+            group=f'{msg.appointment.id}',
+            message={
+                'type': "chat.message.created",
+                'data': msg_data
+            }
+        )
+        return
+
+    async def chat_message_created(self, message):
+
+        await self.send_json(
+            {
+                'type': 'chat.message.created',
+                'data': message.get('data')
+            }
+        )
+
     async def schedule_appointment(self, content, **kwargs):
         data = content.get('data')
         appt = await self._create_appointment(data)
@@ -166,7 +203,6 @@ class AppointmentConsumer(AsyncJsonWebsocketConsumer):
         data = content.get('data')
         valid = await self._check_clin_apt_valid(self.scope['user'])
         if not valid:
-            print('not valid')
             await self.send_json({
                 'type': 'apt.requested.fail',
                 'msg': 'You must complete your current appointment before booking another'
@@ -224,7 +260,7 @@ class AppointmentConsumer(AsyncJsonWebsocketConsumer):
                     channel=self.channel_name
                 )
         await super().disconnect(code)
-    
+
     async def echo_message(self, message):
         await self.send_json(message)
 
@@ -242,3 +278,5 @@ class AppointmentConsumer(AsyncJsonWebsocketConsumer):
             await self.update_appointment(content)
         elif message_type == 'echo.message':
             await self.echo_message(content)
+        elif message_type == 'create.new_chat_msg':
+            await self.create_new_chat_msg(content)

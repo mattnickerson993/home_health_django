@@ -30,6 +30,7 @@ INSTALLED_APPS = [
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
+    'django.contrib.sites',
     'django.contrib.messages',
     'django.contrib.postgres',
     'django.contrib.staticfiles',
@@ -205,3 +206,6 @@ SIMPLE_JWT = {
     # will accepy Authorizatio in header
     'AUTH_HEADER_NAME': 'HTTP_AUTHORIZATION',
 }
+
+
+SITE_ID = 2

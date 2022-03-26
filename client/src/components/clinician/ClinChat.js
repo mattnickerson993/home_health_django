@@ -17,15 +17,21 @@ import {
 import SendIcon from "@mui/icons-material/Send";
 import { Chat } from "@mui/icons-material";
 import { ChatMessageContext } from "../../context";
-import { getAptMessages } from "../../services/AptService";
+import { getAptMessages, sendNewChatMsg } from "../../services/AptService";
+import ChatMessage from "./ChatMessage";
 
 const ClinChat = () => {
+  const [newMessage, setNewMessage] = React.useState("");
+
   const {
     clinicianChatMessages: { chatMessages },
     dispatchClinicianChatMessages,
   } = React.useContext(ChatMessageContext);
-  console.log("msgs", chatMessages);
+  const apt_id = chatMessages?.[0]?.appointment?.id;
 
+  async function handleSubmit(msg) {
+    await sendNewChatMsg(msg, apt_id);
+  }
   return (
     <>
       <Paper
@@ -57,70 +63,24 @@ const ClinChat = () => {
         <Grid container className={"blah"}>
           <Grid item xs={12}>
             <List sx={{ width: "100%" }}>
-              <ListItem alignItems="flex-start">
-                <ListItemAvatar>
-                  <Avatar>H</Avatar>
-                </ListItemAvatar>
-                <ListItemText
-                  primary="Brunch this weekend?"
-                  secondary={
-                    <Typography
-                      sx={{ display: "inline" }}
-                      component="span"
-                      variant="body2"
-                      color="text.primary"
-                    >
-                      9:30 pm
-                    </Typography>
-                  }
-                />
-              </ListItem>
-              <ListItem>
-                <ListItemAvatar>
-                  <Avatar>M</Avatar>
-                </ListItemAvatar>
-                <ListItemText
-                  primary="Summer BBQ"
-                  secondary={
-                    <Typography
-                      sx={{ display: "inline" }}
-                      component="span"
-                      variant="body2"
-                      color="text.primary"
-                    >
-                      10:30am
-                    </Typography>
-                  }
-                />
-              </ListItem>
-              <ListItem alignItems="flex-start">
-                <ListItemAvatar>
-                  <Avatar>W</Avatar>
-                </ListItemAvatar>
-                <ListItemText
-                  primary="Oui Oui"
-                  secondary={
-                    <Typography
-                      sx={{ display: "inline" }}
-                      component="span"
-                      variant="body2"
-                      color="text.primary"
-                    >
-                      8:20pm
-                    </Typography>
-                  }
-                />
-              </ListItem>
+              {chatMessages &&
+                chatMessages.map((msg) => <ChatMessage msg={msg} />)}
             </List>
             <Divider />
           </Grid>
           <Grid container style={{ padding: "20px" }}>
             <Grid item xs={11}>
-              <TextField id="outlined-message" label="Message" fullWidth />
+              <TextField
+                value={newMessage}
+                onChange={(e) => setNewMessage(e.target.value)}
+                id="outlined-message"
+                label="Message"
+                fullWidth
+              />
             </Grid>
             <Grid xs={1} align="right">
               <Fab color="primary" aria-label="add">
-                <SendIcon />
+                <SendIcon onClick={() => handleSubmit(newMessage)} />
               </Fab>
             </Grid>
           </Grid>

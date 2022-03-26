@@ -1,5 +1,7 @@
 from django.contrib.auth import get_user_model
 from django.contrib.auth.models import Group
+from django.contrib.sites.models import Site
+from django.conf import settings
 
 from rest_framework import serializers
 
@@ -21,7 +23,7 @@ class UserSerializer(serializers.ModelSerializer):
     password1 = serializers.CharField(write_only=True)
     password2 = serializers.CharField(write_only=True)
     group = serializers.CharField()
-    # photo = serializers.ImageField(max_length=None, use_url=True)
+    photo = serializers.ImageField(max_length=None, use_url=True)
 
     def validate(self, data):
 
@@ -48,10 +50,20 @@ class UserSerializer(serializers.ModelSerializer):
         model = USER
         fields = (
             'id', 'email', 'password1', 'password2',
-            'first_name', 'last_name', 'group',
+            'first_name', 'last_name', 'group', 'photo'
         )
         read_only_fields = ('id', 'photo')
 
+
+class UserFullImageSerializer(serializers.ModelSerializer):
+    photo_url = serializers.SerializerMethodField('get_image_url')
+    # photo = serializers.ImageField(use_url=False)
+    class Meta:
+        model = USER
+        fields = ('photo_url',)
+
+    def get_image_url(self, obj):
+        return f"{Site.objects.get_current().domain}{obj.photo.url}"
 
 class UserListSerializer(serializers.ModelSerializer):
 

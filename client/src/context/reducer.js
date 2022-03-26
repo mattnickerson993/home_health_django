@@ -219,7 +219,7 @@ export const ClinicianChatMessageReducer = (state, action) => {
     case "ADD_MESSAGE": {
       return {
         ...state,
-        chatMessages: [action.payload, ...state.message],
+        chatMessages: [...state.chatMessages, action.payload],
       };
     }
 
