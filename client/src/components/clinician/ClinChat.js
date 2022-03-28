@@ -62,7 +62,7 @@ const ClinChat = () => {
         </Grid>
         <Grid container className={"blah"}>
           <Grid item xs={12}>
-            <List sx={{ width: "100%" }}>
+            <List sx={{ width: "100%", maxHeight: "100%", overflow: "auto" }}>
               {chatMessages &&
                 chatMessages.map((msg) => <ChatMessage msg={msg} />)}
             </List>

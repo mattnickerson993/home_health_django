@@ -13,6 +13,10 @@ import {
   initClinSchedAptState,
   ClinicianChatMessageReducer,
   initialClinChatMsgState,
+  PatientChatMessageReducer,
+  initialPatientChatMsgState,
+  PatientSchedAptReducer,
+  initPatientSchedAptState,
 } from "./reducer";
 
 export const AuthContext = React.createContext();
@@ -54,14 +58,44 @@ export const ClinicianAptProvider = ({ children }) => {
   );
 };
 
+export const PatientAptContext = React.createContext();
+
+export const PatientAptProvider = ({ children }) => {
+  const [patientschedapts, dispatchPatientSchedApts] = React.useReducer(
+    PatientSchedAptReducer,
+    initPatientSchedAptState
+  );
+
+  return (
+    <PatientAptContext.Provider
+      value={{
+        patientschedapts,
+        dispatchPatientSchedApts,
+      }}
+    >
+      {children}
+    </PatientAptContext.Provider>
+  );
+};
+
 export const ChatMessageContext = React.createContext();
 
 export const ChatMessageProvider = ({ children }) => {
   const [clinicianChatMessages, dispatchClinicianChatMessages] =
     React.useReducer(ClinicianChatMessageReducer, initialClinChatMsgState);
+
+  const [patientChatMessages, dispatchPatientChatMessages] = React.useReducer(
+    PatientChatMessageReducer,
+    initialPatientChatMsgState
+  );
   return (
     <ChatMessageContext.Provider
-      value={{ clinicianChatMessages, dispatchClinicianChatMessages }}
+      value={{
+        clinicianChatMessages,
+        dispatchClinicianChatMessages,
+        patientChatMessages,
+        dispatchPatientChatMessages,
+      }}
     >
       {children}
     </ChatMessageContext.Provider>

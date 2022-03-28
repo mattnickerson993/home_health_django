@@ -203,12 +203,64 @@ export const ClinSchedAptReducer = (state, action) => {
   }
 };
 
+export const initPatientSchedAptState = {
+  patientschedapts: null,
+  loading: true,
+};
+
+export const PatientSchedAptReducer = (state, action) => {
+  switch (action.type) {
+    case "ADD_APPOINTMENTS": {
+      return {
+        patientschedapts: action.payload,
+        loading: false,
+      };
+    }
+    case "ADD_APPOINTMENT": {
+      return {
+        ...state,
+        patientschedapts: [action.payload, ...state.patientschedapts],
+      };
+    }
+
+    default: {
+      return state;
+    }
+  }
+};
+
 export const initialClinChatMsgState = {
   chatMessages: null,
   loading: true,
 };
 
 export const ClinicianChatMessageReducer = (state, action) => {
+  switch (action.type) {
+    case "ADD_MESSAGES": {
+      return {
+        chatMessages: action.payload,
+        loading: false,
+      };
+    }
+    case "ADD_MESSAGE": {
+      return {
+        ...state,
+        chatMessages: [...state.chatMessages, action.payload],
+      };
+    }
+
+    default: {
+      return state;
+    }
+  }
+};
+
+export const initialPatientChatMsgState = {
+  chatMessages: null,
+  loading: true,
+};
+
+export const PatientChatMessageReducer = (state, action) => {
   switch (action.type) {
     case "ADD_MESSAGES": {
       return {

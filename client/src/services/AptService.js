@@ -126,3 +126,15 @@ export const getClinSchedApts = async (status) => {
     return { response, isError: true };
   }
 };
+
+export const getPatientSchedApts = async (status) => {
+  const url = api.appointments.scheduledApts(status);
+  const token = getAccessToken();
+  const headers = { Authorization: `JWT ${token}` };
+  try {
+    const response = await axios.get(url, { headers });
+    return { response, isError: false };
+  } catch (response) {
+    return { response, isError: true };
+  }
+};
