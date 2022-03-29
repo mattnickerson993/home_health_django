@@ -29,8 +29,19 @@ const ClinChat = () => {
   } = React.useContext(ChatMessageContext);
   const apt_id = chatMessages?.[0]?.appointment?.id;
 
+  const messageEndRef = React.useRef(null);
+
+  React.useEffect(() => {
+    scrollToBottom();
+  }, [chatMessages]);
+
+  const scrollToBottom = () => {
+    messageEndRef.current?.scrollIntoView({ behavior: "smooth" });
+  };
+
   async function handleSubmit(msg) {
     await sendNewChatMsg(msg, apt_id);
+    setNewMessage("");
   }
   return (
     <>
@@ -62,11 +73,20 @@ const ClinChat = () => {
         </Grid>
         <Grid container className={"blah"}>
           <Grid item xs={12}>
-            <List sx={{ width: "100%", maxHeight: "100%", overflow: "auto" }}>
-              {chatMessages &&
-                chatMessages.map((msg) => <ChatMessage msg={msg} />)}
-            </List>
-            <Divider />
+            <Box
+              sx={{
+                overflow: "hidden",
+                overflowY: "scroll",
+                maxHeight: "300px",
+              }}
+            >
+              <List>
+                {chatMessages &&
+                  chatMessages.map((msg) => <ChatMessage msg={msg} />)}
+                <div ref={messageEndRef} />
+              </List>
+              <Divider />
+            </Box>
           </Grid>
           <Grid container style={{ padding: "20px" }}>
             <Grid item xs={11}>

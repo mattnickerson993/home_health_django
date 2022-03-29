@@ -17,8 +17,18 @@ const PatientChat = () => {
   } = React.useContext(ChatMessageContext);
   const apt_id = chatMessages?.[0]?.appointment?.id;
 
+  const messageEndRef = React.useRef(null);
+
+  React.useEffect(() => {
+    scrollToBottom();
+  }, [chatMessages]);
+
+  const scrollToBottom = () => {
+    messageEndRef.current?.scrollIntoView({ behavior: "smooth" });
+  };
   async function handleSubmit(msg) {
     await sendNewChatMsg(msg, apt_id);
+    setNewMessage("");
   }
   return (
     <>
@@ -28,8 +38,6 @@ const PatientChat = () => {
           margin: "auto",
           maxWidth: 700,
           flexGrow: 1,
-          overflow: "auto",
-          maxHeight: 700,
           backgroundColor: (theme) =>
             theme.palette.mode === "dark" ? "#1A2027" : "#fff",
         }}
@@ -52,11 +60,20 @@ const PatientChat = () => {
         </Grid>
         <Grid container className={"blah"}>
           <Grid item xs={12}>
-            <List sx={{ width: "100%" }}>
-              {chatMessages &&
-                chatMessages.map((msg) => <PatientChatMessage msg={msg} />)}
-            </List>
-            <Divider />
+            <Box
+              sx={{
+                overflow: "hidden",
+                overflowY: "scroll",
+                maxHeight: "300px",
+              }}
+            >
+              <List>
+                {chatMessages &&
+                  chatMessages.map((msg) => <PatientChatMessage msg={msg} />)}
+                <div ref={messageEndRef} />
+              </List>
+              <Divider />
+            </Box>
           </Grid>
           <Grid container style={{ padding: "20px" }}>
             <Grid item xs={11}>
