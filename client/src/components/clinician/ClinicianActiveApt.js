@@ -25,6 +25,8 @@ const ClinicianActiveApts = () => {
       window.navigator.geolocation.getCurrentPosition((position) => {
         setLat(position.coords.latitude);
         setLng(position.coords.longitude);
+        // setLat(38.47);
+        // setLng(77.99);
         setLocationLoaded(true);
       });
     }
