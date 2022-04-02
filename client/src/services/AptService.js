@@ -37,6 +37,18 @@ export const createApt = (apt) => {
   _socket.next(message);
 };
 
+export const updateCoords = (coords, apt_id) => {
+  console.log("updating");
+  const message = {
+    type: "update.coords",
+    data: {
+      coords,
+      apt_id,
+    },
+  };
+  _socket.next(message);
+};
+
 export const sendNewChatMsg = (msg, apt_id) => {
   const message = {
     type: "create.new_chat_msg",

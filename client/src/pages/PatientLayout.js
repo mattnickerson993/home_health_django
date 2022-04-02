@@ -26,6 +26,12 @@ function PatientLayout({ isAuthenticated, userDetails }) {
       console.log("msg", message);
       if (message.type === "apt.requested.success") {
         toast.success("Your Appointment has been requested");
+      } else if (message.type === "update.coords") {
+        dispatchPatientSchedApts({
+          type: "UPDATE_CLIN_COORDS",
+          payload: message.data,
+        });
+        console.log("working", message.data);
       } else if (message.type === "chat.message.created") {
         dispatchPatientChatMessages({
           type: "ADD_MESSAGE",

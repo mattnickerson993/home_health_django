@@ -206,6 +206,7 @@ export const ClinSchedAptReducer = (state, action) => {
 export const initPatientSchedAptState = {
   patientschedapts: null,
   loading: true,
+  clincoords: null,
 };
 
 export const PatientSchedAptReducer = (state, action) => {
@@ -220,6 +221,12 @@ export const PatientSchedAptReducer = (state, action) => {
       return {
         ...state,
         patientschedapts: [action.payload, ...state.patientschedapts],
+      };
+    }
+    case "UPDATE_CLIN_COORDS": {
+      return {
+        ...state,
+        clincoords: action.payload,
       };
     }
 

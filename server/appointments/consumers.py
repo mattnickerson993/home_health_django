@@ -264,6 +264,26 @@ class AppointmentConsumer(AsyncJsonWebsocketConsumer):
     async def echo_message(self, message):
         await self.send_json(message)
 
+    async def update_apt_coords(self, content, **kwargs):
+        data = content.get('data')
+        apt_id = data.get('apt_id')
+
+        await self.channel_layer.group_send(
+            group=f"{apt_id}",
+            message={
+                'type': 'update.coords',
+                'data': data.get('coords')
+            }
+        )
+
+    async def update_coords(self, message):
+        await self.send_json(
+            {
+                'type': 'update.coords',
+                'data': message.get('data')
+            }
+        )
+
     async def receive_json(self, content, **kwargs):
         message_type = content.get('type')
         if message_type == 'schedule.appointment':
@@ -280,3 +300,5 @@ class AppointmentConsumer(AsyncJsonWebsocketConsumer):
             await self.echo_message(content)
         elif message_type == 'create.new_chat_msg':
             await self.create_new_chat_msg(content)
+        elif message_type == 'update.coords':
+            await self.update_apt_coords(content)

@@ -30,6 +30,14 @@ class AppointmentListView(generics.ListAPIView):
             }
         return Appointment.objects.filter(**filter)
 
+# class AptClinCoords(generics.RetrieveAPIView):
+#     permission_classes = [permissions.IsAuthenticated]
+#     serializer_class = Appointment
+#     lookup_field = 'id'
+#     lookup_url_kwarg = 'appointment_id'
+
+#     def get_queryset(self):
+#         return super().get_queryset()
 
 
 class AppointmentCreateView(generics.CreateAPIView):

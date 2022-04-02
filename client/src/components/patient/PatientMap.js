@@ -8,13 +8,9 @@ import {
   Marker,
   useLoadScript,
 } from "@react-google-maps/api";
-import DistanceCard from "./DistanceCard";
+import PatientDistanceCard from "./PatientDistanceCard";
 
-const ClinMap = ({ patient_address, lat, lng, zoom }) => {
-  // const { isLoaded } = useLoadScript({
-  //   googleMapsApiKey : process.env.REACT_APP_GOOGLE_MAPS_API_KEY,
-  //   libraries: ['']
-  // })
+const PatientMap = ({ patient_address, lat, lng, zoom }) => {
   const [miles, setMiles] = React.useState(null);
   const [duration, setDuration] = React.useState(null);
   const [response, setResponse] = React.useState(null);
@@ -81,8 +77,10 @@ const ClinMap = ({ patient_address, lat, lng, zoom }) => {
           {!patient_address && <Marker label="A" position={{ lat, lng }} />}
         </GoogleMap>
       </LoadScript>
-      {miles && duration && <DistanceCard miles={miles} duration={duration} />}
+      {miles && duration && (
+        <PatientDistanceCard miles={miles} duration={duration} />
+      )}
     </>
   );
 };
-export default ClinMap;
+export default PatientMap;
