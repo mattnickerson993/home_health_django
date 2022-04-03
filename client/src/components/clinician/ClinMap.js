@@ -10,26 +10,30 @@ import {
 } from "@react-google-maps/api";
 import DistanceCard from "./DistanceCard";
 
-const ClinMap = ({ patient_address, lat, lng, zoom }) => {
-  // const { isLoaded } = useLoadScript({
-  //   googleMapsApiKey : process.env.REACT_APP_GOOGLE_MAPS_API_KEY,
-  //   libraries: ['']
-  // })
+const ClinMap = ({
+  updateDistance,
+  setUpdateDistance,
+  updateDirections,
+  setUpdateDirections,
+  patient_address,
+  lat,
+  lng,
+  zoom,
+}) => {
   const [miles, setMiles] = React.useState(null);
   const [duration, setDuration] = React.useState(null);
   const [response, setResponse] = React.useState(null);
-  const [distanceReceived, setDistanceReceived] = React.useState(false);
-  const [directionsReceived, setDirectionsReceived] = React.useState(false);
+  console.log("rendered");
   const clinician_address = { lat, lng };
   const directionsCallback = (response) => {
-    if (response !== null && response.status === "OK" && !directionsReceived) {
+    if (response !== null && response.status === "OK" && updateDirections) {
       setResponse(response);
-      setDirectionsReceived(true);
+      setUpdateDirections(false);
     }
   };
   const distanceCallback = (res) => {
     if (res !== null) {
-      setDistanceReceived(true);
+      setUpdateDirections(false);
       let miles = res.rows[0].elements[0].distance.value;
       let duration = res.rows[0].elements[0].duration.text;
       setDuration(duration);
@@ -51,7 +55,7 @@ const ClinMap = ({ patient_address, lat, lng, zoom }) => {
           }}
           zoom={zoom}
         >
-          {patient_address && (
+          {patient_address && updateDirections && (
             <DirectionsService
               options={{
                 origin: clinician_address,
@@ -68,7 +72,7 @@ const ClinMap = ({ patient_address, lat, lng, zoom }) => {
               }}
             />
           )}
-          {!distanceReceived && (
+          {updateDirections && (
             <DistanceMatrixService
               options={{
                 origins: [clinician_address],
