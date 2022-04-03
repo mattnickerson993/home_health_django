@@ -19,7 +19,6 @@ function ClinicianLayout({ isAuthenticated, userDetails }) {
     React.useContext(ChatMessageContext);
 
   React.useEffect(() => {
-    console.log("loading patients");
     loadAvailablePatients();
     loadScheduledAppointments();
   }, []);

@@ -29,7 +29,7 @@ const ClinicianActiveApts = () => {
       setLat(position.coords.latitude);
       setLng(position.coords.longitude);
       setLocationLoaded(true);
-      console.log("updating");
+
       updateCoords(
         {
           lat: position.coords.latitude,

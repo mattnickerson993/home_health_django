@@ -1,4 +1,4 @@
-import { CircularProgress } from "@mui/material";
+import { CircularProgress, Typography } from "@mui/material";
 import { Box } from "@mui/system";
 import React from "react";
 import { PatientAptContext } from "../../context";
@@ -36,9 +36,18 @@ const PatientActApts = () => {
           />
         </Box>
       ) : (
-        <Box>
+        <Box
+          sx={{
+            display: "flex",
+            flexDirection: "column",
+            justifyContent: "center",
+            alignItems: "center",
+          }}
+        >
           <CircularProgress />
-          <div>Searching for clinician location</div>
+          <Typography variant="h6" component={"div"}>
+            Your clinician is not on there way yet...
+          </Typography>
         </Box>
       )}
     </>
