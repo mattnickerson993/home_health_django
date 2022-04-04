@@ -8,6 +8,8 @@ const PatientActApts = () => {
   const [lat, setLat] = React.useState(null);
   const [lng, setLng] = React.useState(null);
   const [locationLoaded, setLocationLoaded] = React.useState(false);
+  const [updateDirections, setUpdateDirections] = React.useState(false);
+  const [updateDistance, setUpdateDistance] = React.useState(false);
 
   const {
     patientschedapts: { patientschedapts, clincoords },
@@ -21,14 +23,20 @@ const PatientActApts = () => {
       setLat(clincoords.lat);
       setLng(clincoords.lon);
       setLocationLoaded(true);
+      setUpdateDirections(true);
+      setUpdateDistance(true);
     }
-  }, []);
+  }, [clincoords]);
 
   return (
     <>
       {locationLoaded ? (
         <Box>
           <PatientMap
+            updateDirections={updateDirections}
+            setUpdateDirections={setUpdateDirections}
+            updateDistance={updateDistance}
+            setUpdateDistance={setUpdateDistance}
             patient_address={patient_address}
             lat={lat}
             lng={lng}

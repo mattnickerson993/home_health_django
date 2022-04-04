@@ -23,7 +23,7 @@ const ClinicianActiveApts = () => {
     console.log("use effect called");
     let interval;
     if (window.navigator.geolocation) {
-      interval = setInterval(() => loadCoords(), 6000);
+      interval = setInterval(() => loadCoords(), 60000);
     }
     if (!locationLoaded) {
       loadCoords();
@@ -33,17 +33,12 @@ const ClinicianActiveApts = () => {
       clearInterval(interval);
     };
   }, []);
-  // let count = 0;
 
   async function loadCoords() {
     console.log("loading coords called");
     window.navigator.geolocation.getCurrentPosition((position) => {
-      console.log("setting");
       setLat(position.coords.latitude);
       setLng(position.coords.longitude);
-      setLocationLoaded(true);
-      setUpdateDirections(true);
-      setUpdateDistance(true);
       updateCoords(
         {
           lat: position.coords.latitude,
@@ -51,6 +46,9 @@ const ClinicianActiveApts = () => {
         },
         apt_id
       );
+      setLocationLoaded(true);
+      setUpdateDirections(true);
+      setUpdateDistance(true);
     });
   }
 
