@@ -30,6 +30,27 @@ class AppointmentListView(generics.ListAPIView):
             }
         return Appointment.objects.filter(**filter)
 
+
+class AppointmentPastListView(generics.ListAPIView):
+    permission_classes = [permissions.IsAuthenticated]
+    serializer_class = AppointmentListSerializer
+
+    def get_queryset(self):
+        user = self.request.user
+        group = user.group
+        past_statuses = ['complete', 'canceled']
+        if group == 'clinician':
+            filter = {
+                "clinician_id": user.id,
+                "status__in": past_statuses
+            }
+        else:
+            filter = {
+                "patient_id": user.id,
+                "status__in": past_statuses
+            }
+        return Appointment.objects.filter(**filter)
+
 # class AptClinCoords(generics.RetrieveAPIView):
 #     permission_classes = [permissions.IsAuthenticated]
 #     serializer_class = Appointment
