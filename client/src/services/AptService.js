@@ -150,15 +150,3 @@ export const getPatientSchedApts = async (status) => {
     return { response, isError: true };
   }
 };
-
-export const getClinPastApts = async () => {
-  const url = api.appointments.pastApts();
-  const token = getAccessToken();
-  const headers = { Authorization: `JWT ${token}` };
-  try {
-    const response = await axios.get(url, { headers });
-    return { response, isError: false };
-  } catch (response) {
-    return { response, isError: true };
-  }
-};

@@ -38,7 +38,7 @@ class AppointmentPastListView(generics.ListAPIView):
     def get_queryset(self):
         user = self.request.user
         group = user.group
-        past_statuses = ['complete', 'canceled']
+        past_statuses = ['COMPLETE', 'CANCELED']
         if group == 'clinician':
             filter = {
                 "clinician_id": user.id,

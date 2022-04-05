@@ -19,7 +19,7 @@ export const api = {
     availablePatients: `${baseURL}/api/v1/appointments/available_patients`,
     scheduledApts: (apt_status) =>
       `${baseURL}/api/v1/appointments?status=${apt_status}`,
-    pastApts: `${baseURL}/api/v1/appointments/past`,
+    pastApts: `${baseURL}/api/v1/appointments/past/`,
   },
   messages: {
     aptMessages: (apt_id) =>
