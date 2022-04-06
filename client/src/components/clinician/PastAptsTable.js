@@ -1,18 +1,6 @@
 import React from "react";
-import DeleteIcon from "@mui/icons-material/Delete";
-import EmailIcon from "@mui/icons-material/Email";
-import CheckCircleIcon from "@mui/icons-material/CheckCircle";
-import { Link } from "react-router-dom";
-import FeedbackIcon from "@mui/icons-material/Feedback";
-import ArchiveIcon from "@mui/icons-material/Archive";
-
 import {
-  Button,
-  Chip,
-  CircularProgress,
-  IconButton,
   Paper,
-  Tab,
   Table,
   TableBody,
   TableCell,
@@ -23,11 +11,9 @@ import {
   TableRow,
   TableSortLabel,
   Toolbar,
-  Tooltip,
   Typography,
 } from "@mui/material";
-import { getClinApts, getClinPastApts } from "../../services/AptService";
-import { Box } from "@mui/system";
+
 import TablePaginationActions from "../TablePaginationActions";
 
 const PastAptsTable = ({ apts }) => {
@@ -97,9 +83,15 @@ const PastAptsTable = ({ apts }) => {
       {apts && (
         <>
           <TableContainer component={Paper}>
-            <Toolbar className={""}>
+            <Toolbar
+              sx={{
+                paddingLeft: (theme) => theme.spacing(2),
+                paddingRight: (theme) => theme.spacing(1),
+                marginTop: (theme) => theme.spacing(2),
+              }}
+            >
               <Typography
-                className={""}
+                sx={{ flex: "1 1 100%" }}
                 variant="h6"
                 id="tableTitle"
                 component="div"
@@ -107,8 +99,10 @@ const PastAptsTable = ({ apts }) => {
                 {"Past Appointments"}
               </Typography>
             </Toolbar>
-            <Table className={""} aria-label="simple table">
-              <TableHead style={{}}>
+            <Table sx={{ minWidth: 500 }} aria-label="paginated table">
+              <TableHead
+                sx={{ backgroundColor: (theme) => theme.palette.primary.main }}
+              >
                 <TableRow hover>
                   <TableCell>
                     <TableSortLabel
@@ -121,9 +115,18 @@ const PastAptsTable = ({ apts }) => {
                   </TableCell>
                   <TableCell>
                     <TableSortLabel
-                      active={orderBy === "date_time"}
-                      direction={orderBy === "date_time" ? order : "asc"}
-                      onClick={createSortHandler("date_time")}
+                      active={orderBy === "email"}
+                      direction={orderBy === "email" ? order : "asc"}
+                      onClick={createSortHandler("email")}
+                    >
+                      Email
+                    </TableSortLabel>
+                  </TableCell>
+                  <TableCell>
+                    <TableSortLabel
+                      active={orderBy === "start_time"}
+                      direction={orderBy === "start_time" ? order : "asc"}
+                      onClick={createSortHandler("start_time")}
                     >
                       Date
                     </TableSortLabel>
@@ -138,8 +141,6 @@ const PastAptsTable = ({ apts }) => {
                       Status
                     </TableSortLabel>
                   </TableCell>
-                  <TableCell>Action</TableCell>
-                  <TableCell>Archive/Delete</TableCell>
                 </TableRow>
               </TableHead>
               <TableBody>
@@ -148,88 +149,22 @@ const PastAptsTable = ({ apts }) => {
                   .map((appointment) => (
                     <TableRow hover key={appointment.id}>
                       <TableCell component="th" scope="row">
-                        {`${appointment.last_name}, ${appointment.first_name} `}
+                        {`${appointment.patient.last_name}, ${appointment.patient.first_name} `}
+                      </TableCell>
+                      <TableCell scope="row">
+                        {`${appointment.patient.email}`}
                       </TableCell>
                       <TableCell>{`${new Date(
-                        appointment.date_time
+                        appointment.start_time
                       ).toLocaleDateString()}`}</TableCell>
                       <TableCell>{`${new Date(
-                        appointment.date_time
+                        appointment.start_time
                       ).toLocaleTimeString([], {
                         hour: "2-digit",
                         minute: "2-digit",
                         hour12: true,
                       })}`}</TableCell>
                       <TableCell>{appointment.status}</TableCell>
-                      <TableCell>
-                        {appointment.status === "Pending" && (
-                          <Button variant="contained" color="primary">
-                            Send Email
-                          </Button>
-                        )}
-                        {appointment.status === "Sent" && (
-                          <Chip avatar={<EmailIcon />} label="Email Sent" />
-                        )}
-                        {appointment.status === "Confirmed" && (
-                          <Link
-                            to={`/appointments/detail/${appointment.id}/`}
-                            style={{ textDecoration: "none", color: "inherit" }}
-                          >
-                            <Button variant="contained" color="secondary">
-                              View Details
-                            </Button>
-                          </Link>
-                        )}
-                        {appointment.status === "Complete" && (
-                          <Chip
-                            color="secondary"
-                            icon={<CheckCircleIcon />}
-                            label="Completed"
-                          />
-                        )}
-                        {appointment.status === "Feedback" && (
-                          <Link
-                            to={`/appointments/doctor/review/${appointment.id}/`}
-                            style={{ textDecoration: "none", color: "inherit" }}
-                          >
-                            <Button
-                              color="primary"
-                              endIcon={<FeedbackIcon />}
-                              variant="contained"
-                            >
-                              {" "}
-                              View Feedback
-                            </Button>
-                          </Link>
-                        )}
-                      </TableCell>
-                      <TableCell>
-                        {appointment.status === "Feedback" ? (
-                          <Tooltip title="Archive">
-                            <IconButton
-                              onClick={() => {
-                                setIdTracker(appointment.id);
-                                setOpen(true);
-                              }}
-                              className={""}
-                            >
-                              <ArchiveIcon></ArchiveIcon>
-                            </IconButton>
-                          </Tooltip>
-                        ) : (
-                          <Tooltip title="Delete">
-                            <IconButton
-                              onClick={() => {
-                                setIdTracker(appointment.id);
-                                setOpen(true);
-                              }}
-                              className={""}
-                            >
-                              <DeleteIcon />
-                            </IconButton>
-                          </Tooltip>
-                        )}
-                      </TableCell>
                     </TableRow>
                   ))}
                 {emptyRows > 0 && (
@@ -247,7 +182,7 @@ const PastAptsTable = ({ apts }) => {
                       25,
                       { label: "All", value: -1 },
                     ]}
-                    colSpan={6}
+                    colSpan={5}
                     count={apts.length}
                     rowsPerPage={rowsPerPage}
                     page={page}
@@ -255,8 +190,8 @@ const PastAptsTable = ({ apts }) => {
                       inputProps: { "aria-label": "rows per page" },
                       native: true,
                     }}
-                    onChangePage={handleChangePage}
-                    onChangeRowsPerPage={handleChangeRowsPerPage}
+                    onPageChange={handleChangePage}
+                    onRowsPerPageChange={handleChangeRowsPerPage}
                     ActionsComponent={TablePaginationActions}
                   />
                 </TableRow>

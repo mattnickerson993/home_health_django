@@ -4,28 +4,34 @@ import LastPageIcon from "@mui/icons-material/LastPage";
 import KeyboardArrowRight from "@mui/icons-material/KeyboardArrowRight";
 import KeyboardArrowLeft from "@mui/icons-material/KeyboardArrowLeft";
 import { usePaginationStyles } from "../styles";
+import { Box } from "@mui/system";
 // table pagination
 export default function TablePaginationActions(props) {
-  const { count, page, rowsPerPage, onChangePage } = props;
-
+  const { count, page, rowsPerPage, onPageChange } = props;
+  console.log(count, page, rowsPerPage);
   const handleFirstPageButtonClick = (event) => {
-    onChangePage(event, 0);
+    onPageChange(event, 0);
   };
 
   const handleBackButtonClick = (event) => {
-    onChangePage(event, page - 1);
+    onPageChange(event, page - 1);
   };
 
   const handleNextButtonClick = (event) => {
-    onChangePage(event, page + 1);
+    onPageChange(event, page + 1);
   };
 
   const handleLastPageButtonClick = (event) => {
-    onChangePage(event, Math.max(0, Math.ceil(count / rowsPerPage) - 1));
+    onPageChange(event, Math.max(0, Math.ceil(count / rowsPerPage) - 1));
   };
 
   return (
-    <div className={""}>
+    <Box
+      sx={{
+        flexShrink: 0,
+        marginLeft: (theme) => theme.spacing(2.5),
+      }}
+    >
       <IconButton
         onClick={handleFirstPageButtonClick}
         disabled={page === 0}
@@ -54,6 +60,6 @@ export default function TablePaginationActions(props) {
       >
         {<LastPageIcon />}
       </IconButton>
-    </div>
+    </Box>
   );
 }
