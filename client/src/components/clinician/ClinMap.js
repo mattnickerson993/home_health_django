@@ -23,7 +23,6 @@ const ClinMap = ({
   const [miles, setMiles] = React.useState(null);
   const [duration, setDuration] = React.useState(null);
   const [response, setResponse] = React.useState(null);
-  console.log("rendered");
   const clinician_address = { lat, lng };
   const directionsCallback = (response) => {
     if (response !== null && response.status === "OK" && updateDirections) {

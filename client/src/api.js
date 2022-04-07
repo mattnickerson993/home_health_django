@@ -17,7 +17,7 @@ export const api = {
   },
   appointments: {
     availablePatients: `${baseURL}/api/v1/appointments/available_patients`,
-    scheduledApts: (apt_status) =>
+    activeApts: (apt_status) =>
       `${baseURL}/api/v1/appointments?status=${apt_status}`,
     pastApts: `${baseURL}/api/v1/appointments/past/`,
   },

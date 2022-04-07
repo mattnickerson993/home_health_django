@@ -40,6 +40,7 @@ const ClinChat = () => {
   };
 
   async function handleSubmit(msg) {
+    console.log("msg", msg, "apt_id", apt_id);
     await sendNewChatMsg(msg, apt_id);
     setNewMessage("");
   }

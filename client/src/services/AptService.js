@@ -127,8 +127,8 @@ export const getAptMessages = async (apt_id) => {
   }
 };
 
-export const getClinSchedApts = async (status) => {
-  const url = api.appointments.scheduledApts(status);
+export const getClinActiveApts = async (status) => {
+  const url = api.appointments.activeApts(status);
   const token = getAccessToken();
   const headers = { Authorization: `JWT ${token}` };
   try {

@@ -4,7 +4,7 @@ import {
   connect,
   getAptMessages,
   getClinMessages,
-  getClinSchedApts,
+  getClinActiveApts,
   messages,
 } from "../services/AptService";
 import { toast } from "react-toastify";
@@ -20,7 +20,7 @@ function ClinicianLayout({ isAuthenticated, userDetails }) {
 
   React.useEffect(() => {
     loadAvailablePatients();
-    loadScheduledAppointments();
+    loadActiveAppointments();
   }, []);
 
   React.useEffect(() => {
@@ -73,8 +73,9 @@ function ClinicianLayout({ isAuthenticated, userDetails }) {
     dispatchClinicianApts({ type: "ADD_APPOINTMENTS", payload: response.data });
   };
 
-  const loadScheduledAppointments = async () => {
-    const { response, isError } = await getClinSchedApts("SCHEDULED");
+  const loadActiveAppointments = async () => {
+    const { response, isError } = await getClinActiveApts("ACTIVE");
+    console.log("res", response);
     const apt_id = response?.data[0]?.id;
     dispatchClinSchedApts({ type: "ADD_APPOINTMENTS", payload: response.data });
     if (apt_id) {
