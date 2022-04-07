@@ -16,7 +16,7 @@ import {
 
 import TablePaginationActions from "../TablePaginationActions";
 
-const PastAptsTable = ({ apts }) => {
+const PatientPastAptsTable = ({ apts }) => {
   const [open, setOpen] = React.useState(false);
   const [idTracker, setIdTracker] = React.useState(0);
 
@@ -110,7 +110,7 @@ const PastAptsTable = ({ apts }) => {
                       direction={orderBy === "last_name" ? order : "asc"}
                       onClick={createSortHandler("last_name")}
                     >
-                      Patient Name
+                      Clinician Name
                     </TableSortLabel>
                   </TableCell>
                   <TableCell>
@@ -149,10 +149,10 @@ const PastAptsTable = ({ apts }) => {
                   .map((appointment) => (
                     <TableRow hover key={appointment.id}>
                       <TableCell component="th" scope="row">
-                        {`${appointment.patient.last_name}, ${appointment.patient.first_name} `}
+                        {`${appointment.clinician.last_name}, ${appointment.clinician.first_name} `}
                       </TableCell>
                       <TableCell scope="row">
-                        {`${appointment.patient.email}`}
+                        {`${appointment.clinician.email}`}
                       </TableCell>
                       <TableCell>{`${new Date(
                         appointment.start_time
@@ -204,4 +204,4 @@ const PastAptsTable = ({ apts }) => {
   );
 };
 
-export default PastAptsTable;
+export default PatientPastAptsTable;

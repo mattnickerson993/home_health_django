@@ -1,13 +1,9 @@
-import Dashboard from "../pages/Dashboard";
-import LogIn from "../pages/Login";
 import NotFound from "../pages/NotFound";
-import Register from "../pages/Register";
-import Layout from "../pages/Layout";
 import ClinicianActiveApts from "../components/clinician/ClinicianActiveApt";
 import ClinPastApts from "../components/clinician/ClinPastApts";
 import ClinChat from "../components/clinician/ClinChat";
 import PatientActApts from "../components/patient/PatientActApts";
-import PatientPstApts from "../components/patient/PatientPstApt";
+import PatientPstApts from "../components/patient/PatientPstApts";
 import PatientChat from "../components/patient/PatientChat";
 
 export const routes = [
