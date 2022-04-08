@@ -179,6 +179,8 @@ export const ClinicianAppointmentReducer = (state, action) => {
 
 export const initClinSchedAptState = {
   clinschedapts: null,
+  clin_inroute_apts: null,
+  clin_arrived_apts: null,
   loading: true,
 };
 
@@ -186,7 +188,15 @@ export const ClinSchedAptReducer = (state, action) => {
   switch (action.type) {
     case "ADD_APPOINTMENTS": {
       return {
-        clinschedapts: action.payload,
+        clinschedapts: action.payload.filter(
+          (apt) => apt.status === "SCHEDULED"
+        ),
+        clin_inroute_apts: action.payload.filter(
+          (apt) => apt.status === "IN_ROUTE"
+        ),
+        clin_arrived_apts: action.payload.filter(
+          (apt) => apt.status === "ARRIVED"
+        ),
         loading: false,
       };
     }

@@ -67,9 +67,9 @@ class AppointmentConsumer(AsyncJsonWebsocketConsumer):
         # patient cant asked for another appointment when one is not resolved
         current_apts = Appointment.objects.filter(patient_id=user.id, status__in=[
             Appointment.REQUESTED,
-            Appointment.IN_PROGRESS,
+            Appointment.IN_ROUTE,
             Appointment.SCHEDULED,
-            Appointment.STARTED
+            Appointment.ARRIVED
         ]).count()
         if current_apts > 0:
             return False

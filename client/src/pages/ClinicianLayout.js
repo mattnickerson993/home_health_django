@@ -75,7 +75,6 @@ function ClinicianLayout({ isAuthenticated, userDetails }) {
 
   const loadActiveAppointments = async () => {
     const { response, isError } = await getClinActiveApts("ACTIVE");
-    console.log("res", response);
     const apt_id = response?.data[0]?.id;
     dispatchClinSchedApts({ type: "ADD_APPOINTMENTS", payload: response.data });
     if (apt_id) {

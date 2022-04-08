@@ -29,7 +29,7 @@ const ClinPastApts = () => {
     // get canceled and completed apts
     getClinPastApts();
   }, []);
-
+  console.log("apts len", apts);
   if (loading) {
     return (
       <Box sx={{ display: "flex", alignItems: "center" }}>

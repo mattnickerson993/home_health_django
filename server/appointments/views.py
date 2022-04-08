@@ -19,7 +19,7 @@ class AppointmentListView(generics.ListAPIView):
         group = user.group
         # status = self.request.query_params.get('status')
         status_filter = {
-            'status__in': ['SCHEDULED', 'IN_ROUTE', 'STARTED']
+            'status__in': ['SCHEDULED', 'IN_ROUTE', 'ARRIVED']
         }
         if group == 'clinician':
             filter = {

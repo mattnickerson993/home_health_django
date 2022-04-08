@@ -6,22 +6,22 @@ from django.db import models
 USER = get_user_model()
 
 class Appointment(models.Model):
+    ARRIVED = 'ARRIVED'
     COMPLETE = 'COMPLETE'
     CANCELED = 'CANCELED'
-    IN_PROGRESS = 'IN_PROGRESS'
+    IN_ROUTE= 'IN_ROUTE'
     REQUESTED = 'REQUESTED'
     RESCHEDULED = 'RESCHEDULED'
     SCHEDULED = 'SCHEDULED'
-    STARTED = 'STARTED'
 
     APPOINTMENT_STATUSES = [
+        (ARRIVED, 'arrived'),
         (COMPLETE, 'complete'),
         (CANCELED,'canceled'),
-        (IN_PROGRESS, 'in_progress'),
+        (IN_ROUTE, 'in_route'),
         (REQUESTED,'requested'),
         (RESCHEDULED, 'rescheduled'),
         (SCHEDULED, 'scheduled'),
-        (STARTED, 'started'),
     ]
 
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)

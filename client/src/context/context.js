@@ -39,7 +39,7 @@ export const ClinicianAptProvider = ({ children }) => {
     initialClinicianAptState
   );
 
-  const [clinschedapts, dispatchClinSchedApts] = React.useReducer(
+  const [clinactiveapts, dispatchClinSchedApts] = React.useReducer(
     ClinSchedAptReducer,
     initClinSchedAptState
   );
@@ -49,7 +49,7 @@ export const ClinicianAptProvider = ({ children }) => {
       value={{
         clinicianApts,
         dispatchClinicianApts,
-        clinschedapts,
+        clinactiveapts,
         dispatchClinSchedApts,
       }}
     >

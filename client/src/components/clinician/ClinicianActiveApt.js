@@ -11,21 +11,26 @@ const ClinicianActiveApts = () => {
   const [locationLoaded, setLocationLoaded] = React.useState(false);
   const [updateDistance, setUpdateDistance] = React.useState(true);
   const [updateDirections, setUpdateDirections] = React.useState(true);
-  const {
-    clinschedapts: { clinschedapts },
-  } = React.useContext(ClinicianAptContext);
-  const patient_address = clinschedapts
-    ? clinschedapts[0].patient_address
-    : null;
-  const apt_id = clinschedapts ? clinschedapts[0].id : null;
+  // apt context
+  const { clinactiveapts } = React.useContext(ClinicianAptContext);
+  const { clinschedapts, clin_inroute_apts, clin_arrived_apts } =
+    clinactiveapts;
+  const aptsPresent = clinschedapts && clinschedapts.len;
+
+  console.log("clin sched apts", clinschedapts);
+  const patient_address =
+    clinschedapts && clinschedapts.len
+      ? clinschedapts[0].patient_address
+      : null;
+  const apt_id =
+    clinschedapts && clinschedapts.len ? clinschedapts[0].id : null;
 
   React.useEffect(() => {
-    console.log("use effect called");
     let interval;
-    if (window.navigator.geolocation) {
+    if (window.navigator.geolocation && aptsPresent) {
       interval = setInterval(() => loadCoords(), 60000);
     }
-    if (!locationLoaded) {
+    if (aptsPresent && !locationLoaded) {
       loadCoords();
     }
     return () => {
@@ -51,7 +56,16 @@ const ClinicianActiveApts = () => {
       setUpdateDistance(true);
     });
   }
-
+  if (!aptsPresent) {
+    return (
+      <>
+        <Box>
+          Looks like you don't have any active appointments. Check back when you
+          do!
+        </Box>
+      </>
+    );
+  }
   return (
     <>
       {locationLoaded ? (
