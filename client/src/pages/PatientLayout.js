@@ -26,6 +26,18 @@ function PatientLayout({ isAuthenticated, userDetails }) {
       console.log("msg", message);
       if (message.type === "apt.requested.success") {
         toast.success("Your Appointment has been requested");
+      } else if (message.type === "clin.arrival.update") {
+        console.log("working", message.data);
+        const {
+          clinician: { first_name: clin_first_name, last_name: clin_last_name },
+        } = message.data;
+        toast.info(`${clin_first_name} ${clin_last_name} has arrived!`);
+      } else if (message.type === "clin.on.way") {
+        console.log("working", message.data);
+        const {
+          clinician: { first_name: clin_first_name, last_name: clin_last_name },
+        } = message.data;
+        toast.info(`${clin_first_name} ${clin_last_name} is on there way!`);
       } else if (message.type === "update.coords") {
         dispatchPatientSchedApts({
           type: "UPDATE_CLIN_COORDS",

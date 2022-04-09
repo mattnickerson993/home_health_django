@@ -5,8 +5,12 @@ import CardActions from "@mui/material/CardActions";
 import CardContent from "@mui/material/CardContent";
 import Button from "@mui/material/Button";
 import Typography from "@mui/material/Typography";
+import { clinArrival } from "../../services/AptService";
 
-export default function DistanceCard({ miles, duration }) {
+export default function DistanceCard({ apt_id, miles, duration }) {
+  function handleArrival() {
+    clinArrival(apt_id);
+  }
   return (
     <Card sx={{ minWidth: 275 }}>
       <CardContent>
@@ -21,7 +25,9 @@ export default function DistanceCard({ miles, duration }) {
         </Typography>
       </CardContent>
       <CardActions>
-        <Button size="small">Mark as Arrived</Button>
+        <Button onClick={handleArrival} size="small">
+          Mark as Arrived
+        </Button>
       </CardActions>
     </Card>
   );

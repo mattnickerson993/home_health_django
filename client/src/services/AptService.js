@@ -70,6 +70,28 @@ export const clinBookApt = (apt_id) => {
   };
   _socket.next(message);
 };
+
+export const clinBeginNav = (apt_id) => {
+  const message = {
+    type: "clin.begin.nav",
+    data: {
+      id: apt_id,
+      status: "IN_ROUTE",
+    },
+  };
+  _socket.next(message);
+};
+
+export const clinArrival = (apt_id) => {
+  const message = {
+    type: "clin.arrived",
+    data: {
+      id: apt_id,
+      status: "ARRIVED",
+    },
+  };
+  _socket.next(message);
+};
 // export const createTrip = (trip) => {
 //   connect();
 //   const message = {

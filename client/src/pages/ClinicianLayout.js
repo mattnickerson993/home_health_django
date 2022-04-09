@@ -13,7 +13,7 @@ import { ClinicianAptContext, ChatMessageContext } from "../context";
 import { getAvailablePatients } from "../services/AptService";
 
 function ClinicianLayout({ isAuthenticated, userDetails }) {
-  const { clinicianApts, dispatchClinicianApts, dispatchClinSchedApts } =
+  const { clinicianApts, dispatchClinicianApts, dispatchClinActiveApts } =
     React.useContext(ClinicianAptContext);
   const { clinicianChatMessages, dispatchClinicianChatMessages } =
     React.useContext(ChatMessageContext);
@@ -35,6 +35,17 @@ function ClinicianLayout({ isAuthenticated, userDetails }) {
           patient: { first_name, last_name },
         } = message.data;
         toast.info(`${first_name} ${last_name} has requested an appointment`);
+      } else if (message.type === "clin.on.way") {
+        console.log("working", message.data);
+        dispatchClinActiveApts({
+          type: "ADD_APPOINTMENT",
+          payload: message.data,
+        });
+      } else if (message.type === "clin.arrival.update") {
+        dispatchClinActiveApts({
+          type: "ADD_APPOINTMENT",
+          payload: message.data,
+        });
       } else if (message.type === "chat.message.created") {
         dispatchClinicianChatMessages({
           type: "ADD_MESSAGE",
@@ -53,6 +64,10 @@ function ClinicianLayout({ isAuthenticated, userDetails }) {
         dispatchClinicianApts({
           type: "REMOVE_APPOINTMENT",
           payload: { id: apt_id },
+        });
+        dispatchClinActiveApts({
+          type: "ADD_APPOINTMENT",
+          payload: message.data,
         });
         toast.info(
           `Your appointment has been booked an appointment with ${patient_first_name} ${patient_last_name} `
@@ -76,7 +91,10 @@ function ClinicianLayout({ isAuthenticated, userDetails }) {
   const loadActiveAppointments = async () => {
     const { response, isError } = await getClinActiveApts("ACTIVE");
     const apt_id = response?.data[0]?.id;
-    dispatchClinSchedApts({ type: "ADD_APPOINTMENTS", payload: response.data });
+    dispatchClinActiveApts({
+      type: "ADD_APPOINTMENTS",
+      payload: response.data,
+    });
     if (apt_id) {
       const { response, isError } = await getAptMessages(apt_id);
       dispatchClinicianChatMessages({

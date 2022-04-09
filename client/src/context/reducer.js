@@ -177,14 +177,14 @@ export const ClinicianAppointmentReducer = (state, action) => {
 
 // clinician scheduled apts
 
-export const initClinSchedAptState = {
+export const initClinActiveAptState = {
   clinschedapts: null,
   clin_inroute_apts: null,
   clin_arrived_apts: null,
   loading: true,
 };
 
-export const ClinSchedAptReducer = (state, action) => {
+export const ClinActiveAptReducer = (state, action) => {
   switch (action.type) {
     case "ADD_APPOINTMENTS": {
       return {
@@ -203,7 +203,18 @@ export const ClinSchedAptReducer = (state, action) => {
     case "ADD_APPOINTMENT": {
       return {
         ...state,
-        clinschedapts: [action.payload, ...state.clinschedapts],
+        clinschedapts:
+          action.payload.status === "SCHEDULED"
+            ? [action.payload, ...state.clinschedapts]
+            : [],
+        clin_inroute_apts:
+          action.payload.status === "IN_ROUTE"
+            ? [action.payload, ...state.clin_inroute_apts]
+            : [],
+        clin_arrived_apts:
+          action.payload.status === "ARRIVED"
+            ? [action.payload, ...state.clin_arrived_apts]
+            : [],
       };
     }
 

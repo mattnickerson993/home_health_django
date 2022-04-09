@@ -29,6 +29,7 @@ const ClinChat = () => {
   } = React.useContext(ChatMessageContext);
   const apt_id = chatMessages?.[0]?.appointment?.id;
 
+  // logic to autoscroll to bottom of chat
   const messageEndRef = React.useRef(null);
 
   React.useEffect(() => {
@@ -40,9 +41,21 @@ const ClinChat = () => {
   };
 
   async function handleSubmit(msg) {
-    console.log("msg", msg, "apt_id", apt_id);
-    await sendNewChatMsg(msg, apt_id);
+    if (apt_id) {
+      await sendNewChatMsg(msg, apt_id);
+    }
     setNewMessage("");
+  }
+
+  if (!apt_id) {
+    return (
+      <>
+        <Box>
+          Looks like you don't have any active appointments. Check back to chat
+          when you do!
+        </Box>
+      </>
+    );
   }
   return (
     <>

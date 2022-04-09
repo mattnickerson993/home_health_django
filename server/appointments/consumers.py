@@ -80,9 +80,9 @@ class AppointmentConsumer(AsyncJsonWebsocketConsumer):
     def _check_clin_apt_valid(self, user):
         # patient cant asked for another appointment when one is not resolved
         current_apts = Appointment.objects.filter(clinician_id=user.id, status__in=[
-            Appointment.IN_PROGRESS,
+            Appointment.IN_ROUTE,
             Appointment.SCHEDULED,
-            Appointment.STARTED
+            Appointment.ARRIVED
         ]).count()
         if current_apts > 0:
             return False
@@ -131,7 +131,7 @@ class AppointmentConsumer(AsyncJsonWebsocketConsumer):
             group=f"{id}",
             channel=self.channel_name
         )
-
+        # broadcast request to all clins
         await self.channel_layer.group_send(group='clinicians', message={
             'type': 'apt.requested.clins',
             'data': appt_data
@@ -276,6 +276,50 @@ class AppointmentConsumer(AsyncJsonWebsocketConsumer):
             }
         )
 
+    async def clin_begin_nav(self, content, **kwargs):
+        data = content.get('data')
+        updated_appt = await self._update_appointment(data)
+        appt_data = await self._get_appointment_data(updated_appt)
+
+        await self.channel_layer.group_send(
+            group=f"{updated_appt.id}",
+            message={
+                'type': 'clin.on.way',
+                'data': appt_data
+            }
+        )
+
+    async def clin_on_way(self, message):
+
+        await self.send_json(
+            {
+                'type': 'clin.on.way',
+                'data': message.get('data')
+            }
+        )
+
+    async def clin_arrived(self, content, **kwargs):
+        data = content.get('data')
+        updated_appt = await self._update_appointment(data)
+        appt_data = await self._get_appointment_data(updated_appt)
+
+        await self.channel_layer.group_send(
+            group=f"{updated_appt.id}",
+            message={
+                'type': 'clin.arrival.update',
+                'data': appt_data
+            }
+        )
+
+    async def clin_arrival_update(self, message):
+
+        await self.send_json(
+            {
+                'type': 'clin.arrival.update',
+                'data': message.get('data')
+            }
+        )
+
     async def update_coords(self, message):
         await self.send_json(
             {
@@ -302,3 +346,7 @@ class AppointmentConsumer(AsyncJsonWebsocketConsumer):
             await self.create_new_chat_msg(content)
         elif message_type == 'update.coords':
             await self.update_apt_coords(content)
+        elif message_type == 'clin.begin.nav':
+            await self.clin_begin_nav(content)
+        elif message_type == 'clin.arrived':
+            await self.clin_arrived(content)

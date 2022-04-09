@@ -11,6 +11,7 @@ import {
 import DistanceCard from "./DistanceCard";
 
 const ClinMap = ({
+  apt_id,
   updateDistance,
   setUpdateDistance,
   updateDirections,
@@ -84,7 +85,9 @@ const ClinMap = ({
           {!patient_address && <Marker label="A" position={{ lat, lng }} />}
         </GoogleMap>
       </LoadScript>
-      {miles && duration && <DistanceCard miles={miles} duration={duration} />}
+      {miles && duration && (
+        <DistanceCard apt_id={apt_id} miles={miles} duration={duration} />
+      )}
     </>
   );
 };

@@ -1,8 +1,8 @@
-import { CircularProgress, Typography } from "@mui/material";
+import { Button, CircularProgress, Typography } from "@mui/material";
 import { Box } from "@mui/system";
 import React from "react";
 import { ClinicianAptContext } from "../../context";
-import { updateCoords } from "../../services/AptService";
+import { updateCoords, clinBeginNav } from "../../services/AptService";
 import ClinMap from "./ClinMap";
 
 const ClinicianActiveApts = () => {
@@ -15,35 +15,51 @@ const ClinicianActiveApts = () => {
   const { clinactiveapts } = React.useContext(ClinicianAptContext);
   const { clinschedapts, clin_inroute_apts, clin_arrived_apts } =
     clinactiveapts;
-  const aptsPresent = clinschedapts && clinschedapts.len;
+  // check which type is present if any
+  const schedAptsPresent = clinschedapts && clinschedapts.length;
+  const inRouteAptsPresent = clin_inroute_apts && clin_inroute_apts.length;
+  const arrivedAptsPresent = clin_arrived_apts && clin_arrived_apts.length;
 
-  console.log("clin sched apts", clinschedapts);
-  const patient_address =
-    clinschedapts && clinschedapts.len
-      ? clinschedapts[0].patient_address
-      : null;
-  const apt_id =
-    clinschedapts && clinschedapts.len ? clinschedapts[0].id : null;
+  // display map under following condition
+  const displayMap = inRouteAptsPresent;
+  // get address and apt_id if they exist
+  const patient_address = schedAptsPresent
+    ? clinschedapts[0].patient_address
+    : inRouteAptsPresent
+    ? clin_inroute_apts[0].patient_address
+    : arrivedAptsPresent
+    ? clin_arrived_apts[0].patient_address
+    : null;
 
+  const apt_id = schedAptsPresent
+    ? clinschedapts[0].id
+    : inRouteAptsPresent
+    ? clin_inroute_apts[0].id
+    : arrivedAptsPresent
+    ? clin_arrived_apts[0].id
+    : null;
+
+  //  fetch and update current position every minute
   React.useEffect(() => {
     let interval;
-    if (window.navigator.geolocation && aptsPresent) {
+    if (window.navigator.geolocation && displayMap) {
       interval = setInterval(() => loadCoords(), 60000);
     }
-    if (aptsPresent && !locationLoaded) {
+    if (displayMap && !locationLoaded) {
       loadCoords();
     }
     return () => {
       console.log("interval cleared");
       clearInterval(interval);
     };
-  }, []);
+  }, [displayMap]);
 
   async function loadCoords() {
     console.log("loading coords called");
     window.navigator.geolocation.getCurrentPosition((position) => {
       setLat(position.coords.latitude);
       setLng(position.coords.longitude);
+      // update coords for corresponding clin/patient
       updateCoords(
         {
           lat: position.coords.latitude,
@@ -56,7 +72,11 @@ const ClinicianActiveApts = () => {
       setUpdateDistance(true);
     });
   }
-  if (!aptsPresent) {
+
+  function startNavigation() {
+    clinBeginNav(apt_id);
+  }
+  if (!schedAptsPresent && !arrivedAptsPresent && !displayMap) {
     return (
       <>
         <Box>
@@ -65,11 +85,43 @@ const ClinicianActiveApts = () => {
         </Box>
       </>
     );
+  } else if (schedAptsPresent && !displayMap) {
+    return (
+      <>
+        <Box
+          sx={{
+            display: "flex",
+            flexDirection: "column",
+            justifyContent: "center",
+            alignItems: "center",
+          }}
+        >
+          <Button onClick={startNavigation}>Begin navigation</Button>
+        </Box>
+      </>
+    );
+  } else if (arrivedAptsPresent && !displayMap) {
+    return (
+      <>
+        <Box
+          sx={{
+            display: "flex",
+            flexDirection: "column",
+            justifyContent: "center",
+            alignItems: "center",
+          }}
+        >
+          Appointment is in progress
+          <Button onClick={startNavigation}>Complete Appointment</Button>
+        </Box>
+      </>
+    );
   }
   return (
     <>
       {locationLoaded ? (
         <ClinMap
+          apt_id={apt_id}
           updateDistance={updateDistance}
           setUpdateDistance={setUpdateDistance}
           updateDirections={updateDirections}
