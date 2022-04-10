@@ -41,7 +41,10 @@ function ClinicianLayout({ isAuthenticated, userDetails }) {
           type: "ADD_APPOINTMENT",
           payload: message.data,
         });
-      } else if (message.type === "clin.arrival.update") {
+      } else if (
+        message.type === "clin.arrival.update" ||
+        message.type === "clin.complete.update"
+      ) {
         dispatchClinActiveApts({
           type: "ADD_APPOINTMENT",
           payload: message.data,
@@ -70,7 +73,7 @@ function ClinicianLayout({ isAuthenticated, userDetails }) {
           payload: message.data,
         });
         toast.info(
-          `Your appointment has been booked an appointment with ${patient_first_name} ${patient_last_name} `
+          `Your appointment has been booked with ${patient_first_name} ${patient_last_name} `
         );
       }
     });

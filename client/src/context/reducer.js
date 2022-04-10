@@ -224,24 +224,46 @@ export const ClinActiveAptReducer = (state, action) => {
   }
 };
 
-export const initPatientSchedAptState = {
-  patientschedapts: null,
+export const initPatientActiveAptState = {
+  patientschedapts: [],
+  patient_inroute_apts: [],
+  patient_arrived_apts: [],
   loading: true,
   clincoords: null,
 };
 
-export const PatientSchedAptReducer = (state, action) => {
+export const PatientActiveAptReducer = (state, action) => {
   switch (action.type) {
-    case "ADD_APPOINTMENTS": {
+    case "LOAD_APPOINTMENTS": {
       return {
-        patientschedapts: action.payload,
+        patientschedapts: action.payload.filter(
+          (apt) => apt.status === "SCHEDULED"
+        ),
+        patient_inroute_apts: action.payload.filter(
+          (apt) => apt.status === "IN_ROUTE"
+        ),
+        patient_arrived_apts: action.payload.filter(
+          (apt) => apt.status === "ARRIVED"
+        ),
         loading: false,
+        ...state,
       };
     }
     case "ADD_APPOINTMENT": {
       return {
         ...state,
-        patientschedapts: [action.payload, ...state.patientschedapts],
+        patientschedapts:
+          action.payload.status === "SCHEDULED"
+            ? [action.payload, ...state.patientschedapts]
+            : [],
+        patient_inroute_apts:
+          action.payload.status === "IN_ROUTE"
+            ? [action.payload, ...state.patient_inroute_apts]
+            : [],
+        patient_arrived_apts:
+          action.payload.status === "ARRIVED"
+            ? [action.payload, ...state.patient_arrived_apts]
+            : [],
       };
     }
     case "UPDATE_CLIN_COORDS": {
@@ -273,7 +295,9 @@ export const ClinicianChatMessageReducer = (state, action) => {
     case "ADD_MESSAGE": {
       return {
         ...state,
-        chatMessages: [...state.chatMessages, action.payload],
+        chatMessages: state.chatMessages
+          ? [...state.chatMessages, action.payload]
+          : [action.payload],
       };
     }
 
@@ -299,7 +323,9 @@ export const PatientChatMessageReducer = (state, action) => {
     case "ADD_MESSAGE": {
       return {
         ...state,
-        chatMessages: [...state.chatMessages, action.payload],
+        chatMessages: state.chatMessages
+          ? [...state.chatMessages, action.payload]
+          : [action.payload],
       };
     }
 

@@ -12,10 +12,30 @@ const PatientActApts = () => {
   const [updateDistance, setUpdateDistance] = React.useState(false);
 
   const {
-    patientschedapts: { patientschedapts, clincoords },
+    patientactiveapts: {
+      patientschedapts,
+      patient_inroute_apts,
+      patient_arrived_apts,
+      clincoords,
+    },
   } = React.useContext(PatientAptContext);
-  const patient_address = patientschedapts
-    ? patientschedapts[0].patient_address
+
+  // determine type of active apt
+  const schedAptsPresent = patientschedapts && patientschedapts.length > 0;
+  const inRouteAptsPresent =
+    patient_inroute_apts && patient_inroute_apts.length > 0;
+  const arrivedAptsPresent =
+    patient_arrived_apts && patient_arrived_apts.length > 0;
+
+  const aptsPresent =
+    schedAptsPresent || inRouteAptsPresent || arrivedAptsPresent;
+  // only for in route apts
+  console.log("apts Present", aptsPresent);
+  console.log("schedule apts present", schedAptsPresent);
+  console.log("ir", inRouteAptsPresent);
+  console.log("arrived", arrivedAptsPresent);
+  const patient_address = inRouteAptsPresent
+    ? patient_inroute_apts[0].patient_address
     : null;
 
   React.useEffect(() => {
@@ -28,6 +48,33 @@ const PatientActApts = () => {
     }
   }, [clincoords]);
 
+  if (schedAptsPresent) {
+    return (
+      <>
+        <Box>
+          Your Clinician is not in route yet. You'll be notified once they are
+          on there way!
+        </Box>
+      </>
+    );
+  } else if (arrivedAptsPresent) {
+    return (
+      <>
+        <Box>
+          Your Clinician has arrived and your appointment is now in progress
+        </Box>
+      </>
+    );
+  } else if (!aptsPresent) {
+    return (
+      <>
+        <Box>
+          Looks like you dont have any active appointments now. Check back when
+          you do!
+        </Box>
+      </>
+    );
+  }
   return (
     <>
       {locationLoaded ? (
@@ -54,7 +101,7 @@ const PatientActApts = () => {
         >
           <CircularProgress />
           <Typography variant="h6" component={"div"}>
-            Your clinician is not on there way yet...
+            Loading...
           </Typography>
         </Box>
       )}

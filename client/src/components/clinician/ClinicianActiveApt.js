@@ -2,7 +2,11 @@ import { Button, CircularProgress, Typography } from "@mui/material";
 import { Box } from "@mui/system";
 import React from "react";
 import { ClinicianAptContext } from "../../context";
-import { updateCoords, clinBeginNav } from "../../services/AptService";
+import {
+  updateCoords,
+  clinBeginNav,
+  clinComplete,
+} from "../../services/AptService";
 import ClinMap from "./ClinMap";
 
 const ClinicianActiveApts = () => {
@@ -76,6 +80,10 @@ const ClinicianActiveApts = () => {
   function startNavigation() {
     clinBeginNav(apt_id);
   }
+
+  function handleComplete() {
+    clinComplete(apt_id);
+  }
   if (!schedAptsPresent && !arrivedAptsPresent && !displayMap) {
     return (
       <>
@@ -112,7 +120,7 @@ const ClinicianActiveApts = () => {
           }}
         >
           Appointment is in progress
-          <Button onClick={startNavigation}>Complete Appointment</Button>
+          <Button onClick={handleComplete}>Complete Appointment</Button>
         </Box>
       </>
     );

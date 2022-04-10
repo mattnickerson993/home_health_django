@@ -3,6 +3,7 @@ import PatientSidebar from "../components/PatientSidebar";
 import {
   connect,
   getAptMessages,
+  getPatientActiveApts,
   getPatientSchedApts,
   messages,
 } from "../services/AptService";
@@ -11,13 +12,13 @@ import "react-toastify/dist/ReactToastify.css";
 import { ChatMessageContext, PatientAptContext } from "../context";
 
 function PatientLayout({ isAuthenticated, userDetails }) {
-  const { dispatchPatientSchedApts } = React.useContext(PatientAptContext);
+  const { dispatchPatientActiveApts } = React.useContext(PatientAptContext);
   const { patientChatMessages, dispatchPatientChatMessages } =
     React.useContext(ChatMessageContext);
   console.log("patient layout rendered ");
   React.useEffect(() => {
     console.log("loading appointments");
-    loadScheduledAppointments();
+    loadActiveAppointment();
   }, []);
 
   React.useEffect(() => {
@@ -26,20 +27,31 @@ function PatientLayout({ isAuthenticated, userDetails }) {
       console.log("msg", message);
       if (message.type === "apt.requested.success") {
         toast.success("Your Appointment has been requested");
+      } else if (message.type === "clin.complete.update") {
+        dispatchPatientActiveApts({
+          type: "ADD_APPOINTMENT",
+          payload: message.data,
+        });
       } else if (message.type === "clin.arrival.update") {
-        console.log("working", message.data);
+        dispatchPatientActiveApts({
+          type: "ADD_APPOINTMENT",
+          payload: message.data,
+        });
         const {
           clinician: { first_name: clin_first_name, last_name: clin_last_name },
         } = message.data;
         toast.info(`${clin_first_name} ${clin_last_name} has arrived!`);
       } else if (message.type === "clin.on.way") {
-        console.log("working", message.data);
+        dispatchPatientActiveApts({
+          type: "ADD_APPOINTMENT",
+          payload: message.data,
+        });
         const {
           clinician: { first_name: clin_first_name, last_name: clin_last_name },
         } = message.data;
         toast.info(`${clin_first_name} ${clin_last_name} is on there way!`);
       } else if (message.type === "update.coords") {
-        dispatchPatientSchedApts({
+        dispatchPatientActiveApts({
           type: "UPDATE_CLIN_COORDS",
           payload: message.data,
         });
@@ -52,6 +64,10 @@ function PatientLayout({ isAuthenticated, userDetails }) {
       } else if (message.type === "apt.requested.fail") {
         toast.error(`${message.msg}`);
       } else if (message.type === "apt.booked.msg") {
+        dispatchPatientActiveApts({
+          type: "ADD_APPOINTMENT",
+          payload: message.data,
+        });
         const {
           clinician: { first_name: clin_first_name, last_name: clin_last_name },
         } = message.data;
@@ -69,11 +85,11 @@ function PatientLayout({ isAuthenticated, userDetails }) {
     };
   }, []);
 
-  const loadScheduledAppointments = async () => {
-    const { response, isError } = await getPatientSchedApts("SCHEDULED");
+  const loadActiveAppointment = async () => {
+    const { response, isError } = await getPatientActiveApts("Active");
     const apt_id = response?.data[0]?.id;
-    dispatchPatientSchedApts({
-      type: "ADD_APPOINTMENTS",
+    dispatchPatientActiveApts({
+      type: "ADD_APPOINTMENT",
       payload: response.data,
     });
     if (apt_id) {

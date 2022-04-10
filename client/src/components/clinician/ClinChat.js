@@ -16,18 +16,34 @@ import {
 } from "@mui/material";
 import SendIcon from "@mui/icons-material/Send";
 import { Chat } from "@mui/icons-material";
-import { ChatMessageContext } from "../../context";
+import { ChatMessageContext, ClinicianAptContext } from "../../context";
 import { getAptMessages, sendNewChatMsg } from "../../services/AptService";
 import ChatMessage from "./ChatMessage";
 
 const ClinChat = () => {
   const [newMessage, setNewMessage] = React.useState("");
+  // apt context
+  const { clinactiveapts } = React.useContext(ClinicianAptContext);
+  const { clinschedapts, clin_inroute_apts, clin_arrived_apts } =
+    clinactiveapts;
+  // check which type of active apt is present if any
+  const schedAptsPresent = clinschedapts && clinschedapts.length;
+  const inRouteAptsPresent = clin_inroute_apts && clin_inroute_apts.length;
+  const arrivedAptsPresent = clin_arrived_apts && clin_arrived_apts.length;
 
+  // get correct apt_id for chat messages and logic regarding whether chat is displayed
+  const apt_id = schedAptsPresent
+    ? clinschedapts[0].id
+    : inRouteAptsPresent
+    ? clin_inroute_apts[0].id
+    : arrivedAptsPresent
+    ? clin_arrived_apts[0].id
+    : null;
+
+  // previous and updated chat messages
   const {
     clinicianChatMessages: { chatMessages },
-    dispatchClinicianChatMessages,
   } = React.useContext(ChatMessageContext);
-  const apt_id = chatMessages?.[0]?.appointment?.id;
 
   // logic to autoscroll to bottom of chat
   const messageEndRef = React.useRef(null);
@@ -51,7 +67,7 @@ const ClinChat = () => {
     return (
       <>
         <Box>
-          Looks like you don't have any active appointments. Check back to chat
+          Looks like you don't have an active appointment. Check back to chat
           when you do!
         </Box>
       </>

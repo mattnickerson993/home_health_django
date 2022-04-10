@@ -1,3 +1,4 @@
+from pkg_resources import require
 from rest_framework import serializers
 
 from .models import Appointment
@@ -43,6 +44,9 @@ class AppointmentDetailSerializer(serializers.ModelSerializer):
 
 class AppointmentUpdateSerializer(serializers.ModelSerializer):
 
+    start_time = serializers.DateTimeField(required=False)
+
     class Meta:
         model = Appointment
-        fields = ('id', 'clinician', 'patient', 'status')
+        fields = ('id', 'clinician', 'patient', 'status', 'start_time')
+        extra_kwargs = {"start_time": {"required": False, "allow_null": True}}

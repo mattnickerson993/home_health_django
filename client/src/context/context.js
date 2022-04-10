@@ -19,6 +19,8 @@ import {
   initPatientSchedAptState,
   ClinActiveAptReducer,
   initClinActiveAptState,
+  initPatientActiveAptState,
+  PatientActiveAptReducer,
 } from "./reducer";
 
 export const AuthContext = React.createContext();
@@ -63,16 +65,16 @@ export const ClinicianAptProvider = ({ children }) => {
 export const PatientAptContext = React.createContext();
 
 export const PatientAptProvider = ({ children }) => {
-  const [patientschedapts, dispatchPatientSchedApts] = React.useReducer(
-    PatientSchedAptReducer,
-    initPatientSchedAptState
+  const [patientactiveapts, dispatchPatientActiveApts] = React.useReducer(
+    PatientActiveAptReducer,
+    initPatientActiveAptState
   );
 
   return (
     <PatientAptContext.Provider
       value={{
-        patientschedapts,
-        dispatchPatientSchedApts,
+        patientactiveapts,
+        dispatchPatientActiveApts,
       }}
     >
       {children}

@@ -92,6 +92,17 @@ export const clinArrival = (apt_id) => {
   };
   _socket.next(message);
 };
+
+export const clinComplete = (apt_id) => {
+  const message = {
+    type: "clin.apt.complete",
+    data: {
+      id: apt_id,
+      status: "COMPLETE",
+    },
+  };
+  _socket.next(message);
+};
 // export const createTrip = (trip) => {
 //   connect();
 //   const message = {
@@ -161,7 +172,7 @@ export const getClinActiveApts = async (status) => {
   }
 };
 
-export const getPatientSchedApts = async (status) => {
+export const getPatientActiveApts = async (status) => {
   const url = api.appointments.scheduledApts(status);
   const token = getAccessToken();
   const headers = { Authorization: `JWT ${token}` };

@@ -1,3 +1,4 @@
+from datetime import datetime
 from django.contrib.auth import get_user_model
 from django.shortcuts import get_object_or_404
 
@@ -300,6 +301,7 @@ class AppointmentConsumer(AsyncJsonWebsocketConsumer):
 
     async def clin_arrived(self, content, **kwargs):
         data = content.get('data')
+        data.update({'start_time': datetime.now()})
         updated_appt = await self._update_appointment(data)
         appt_data = await self._get_appointment_data(updated_appt)
 
@@ -316,6 +318,28 @@ class AppointmentConsumer(AsyncJsonWebsocketConsumer):
         await self.send_json(
             {
                 'type': 'clin.arrival.update',
+                'data': message.get('data')
+            }
+        )
+    
+    async def clin_complete(self, content, **kwargs):
+        data = content.get('data')
+        updated_appt = await self._update_appointment(data)
+        appt_data = await self._get_appointment_data(updated_appt)
+
+        await self.channel_layer.group_send(
+            group=f"{updated_appt.id}",
+            message={
+                'type': 'clin.complete.update',
+                'data': appt_data
+            }
+        )
+
+    async def clin_complete_update(self, message):
+
+        await self.send_json(
+            {
+                'type': 'clin.complete.update',
                 'data': message.get('data')
             }
         )
@@ -350,3 +374,5 @@ class AppointmentConsumer(AsyncJsonWebsocketConsumer):
             await self.clin_begin_nav(content)
         elif message_type == 'clin.arrived':
             await self.clin_arrived(content)
+        elif message_type == 'clin.apt.complete':
+            await self.clin_complete(content)
