@@ -11,7 +11,7 @@ class AppointmentAdmin(admin.ModelAdmin):
 
     list_display = (
         'id', 'clinician', 'patient', 'status',
-        'start_time', 'length', 'end_time', 
+        'start_time', 'length', 'end_time',
         'created_at', 'updated_at', 'canceled_at',
         'patient_address'
     )

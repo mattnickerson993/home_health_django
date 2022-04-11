@@ -6,7 +6,6 @@ from channels.db import database_sync_to_async
 from channels.generic.websocket import AsyncJsonWebsocketConsumer
 
 from appointments.models import Appointment
-from apt_messages.models import AptMessages
 from users.serializers import UserListSerializer
 from .serializers import AppointmentCreateSerializer, AppointmentUpdateSerializer, NestedAppointmentSerializer
 from apt_messages.serializers import MessageCreateSerializer, MessageSerializer
@@ -17,11 +16,29 @@ User = get_user_model()
 
 class AppointmentConsumer(AsyncJsonWebsocketConsumer):
 
+    # database helpers
+
     @database_sync_to_async
-    def _get_available_clinicians(self):
-        users = User.objects.filter(groups__name="clinician")
-        serializer = UserListSerializer(users, many=True)
-        return serializer.data
+    def _check_apt_valid(self, user, group):
+
+        # patient or clinician cant commit to another apt when one is unresolved
+
+        statuses = [
+            Appointment.REQUESTED, Appointment.IN_ROUTE,
+            Appointment.SCHEDULED, Appointment.ARRIVED
+        ]
+
+        if group == 'clinician':
+            statuses.remove(Appointment.REQUESTED)
+
+        filters = {
+            f"{group}_id": user.id,
+            'status__in': statuses
+        }
+
+        current_apts = Appointment.objects.filter(**filters).count()
+
+        return current_apts == 0
 
     @database_sync_to_async
     def _create_appointment(self, data):
@@ -30,19 +47,20 @@ class AppointmentConsumer(AsyncJsonWebsocketConsumer):
         return serializer.create(serializer.validated_data)
 
     @database_sync_to_async
+    def _create_chat_msg(self, data):
+        serializer = MessageCreateSerializer(data=data)
+        serializer.is_valid(raise_exception=True)
+        return serializer.create(serializer.validated_data)
+
+    @database_sync_to_async
+    def _get_available_clinicians(self):
+        users = User.objects.filter(groups__name="clinician")
+        serializer = UserListSerializer(users, many=True)
+        return serializer.data
+
+    @database_sync_to_async
     def _get_appointment_data(self, appt):
         return NestedAppointmentSerializer(appt).data
-
-    @database_sync_to_async
-    def _update_appointment(self, data):
-        appt = get_object_or_404(Appointment, pk=data.get('id'))
-        serializer = AppointmentUpdateSerializer(data=data)
-        serializer.is_valid(raise_exception=True)
-        return serializer.update(appt, serializer.validated_data)
-
-    @database_sync_to_async
-    def _get_user_group(self, user):
-        return user.groups.first().name
 
     @database_sync_to_async
     def _get_appt_ids(self, user):
@@ -52,44 +70,23 @@ class AppointmentConsumer(AsyncJsonWebsocketConsumer):
         elif 'clinician' in user_groups:
             apts = user.apts_as_clin.all()
         return [str(apt.id) for apt in apts]
-    
-    @database_sync_to_async
-    def _create_chat_msg(self, data):
-        serializer = MessageCreateSerializer(data=data)
-        serializer.is_valid(raise_exception=True)
-        return serializer.create(serializer.validated_data)
 
     @database_sync_to_async
     def _get_chat_msg(self, msg):
         return MessageSerializer(msg).data
 
     @database_sync_to_async
-    def _check_apt_valid(self, user):
-        # patient cant asked for another appointment when one is not resolved
-        current_apts = Appointment.objects.filter(patient_id=user.id, status__in=[
-            Appointment.REQUESTED,
-            Appointment.IN_ROUTE,
-            Appointment.SCHEDULED,
-            Appointment.ARRIVED
-        ]).count()
-        if current_apts > 0:
-            return False
-        else:
-            return True
-    
-    @database_sync_to_async
-    def _check_clin_apt_valid(self, user):
-        # patient cant asked for another appointment when one is not resolved
-        current_apts = Appointment.objects.filter(clinician_id=user.id, status__in=[
-            Appointment.IN_ROUTE,
-            Appointment.SCHEDULED,
-            Appointment.ARRIVED
-        ]).count()
-        if current_apts > 0:
-            return False
-        else:
-            return True
+    def _get_user_group(self, user):
+        return user.groups.first().name
 
+    @database_sync_to_async
+    def _update_appointment(self, data):
+        appt = get_object_or_404(Appointment, pk=data.get('id'))
+        serializer = AppointmentUpdateSerializer(data=data)
+        serializer.is_valid(raise_exception=True)
+        return serializer.update(appt, serializer.validated_data)
+
+    # main consumer logic
     async def connect(self):
         user = self.scope['user']
 
@@ -110,13 +107,10 @@ class AppointmentConsumer(AsyncJsonWebsocketConsumer):
                 )
             await self.accept()
 
-    async def search_clinicians(self):
-        clinicians = await self._get_available_clinicians()
-        await self.send_json(clinicians)
-
     async def create_apt(self, content, **kwargs):
         data = content.get('data')
-        valid = await self._check_apt_valid(self.scope['user'])
+        group = await self._get_user_group(self.scope['user'])
+        valid = await self._check_apt_valid(self.scope['user'], group)
         if not valid:
             await self.send_json({
                 'type': 'apt.requested.fail',
@@ -202,7 +196,8 @@ class AppointmentConsumer(AsyncJsonWebsocketConsumer):
 
     async def clin_book_apt(self, content, **kwargs):
         data = content.get('data')
-        valid = await self._check_clin_apt_valid(self.scope['user'])
+        group = await self._get_user_group(self.scope['user'])
+        valid = await self._check_apt_valid(self.scope['user'], group)
         if not valid:
             await self.send_json({
                 'type': 'apt.requested.fail',
@@ -376,3 +371,16 @@ class AppointmentConsumer(AsyncJsonWebsocketConsumer):
             await self.clin_arrived(content)
         elif message_type == 'clin.apt.complete':
             await self.clin_complete(content)
+
+    async def search_clinicians(self):
+        clinicians = await self._get_available_clinicians()
+        await self.send_json(clinicians)
+    
+    def message_type_mapper(self, message_type, content):
+        mapper = {
+            'schedule.appointment': self.schedule_appointment(content),
+            'create.apt': self.create_apt(content),
+            'clin.book.apt': self.clin_book_apt(content)
+        }
+    
+        return mapper[message_type]
