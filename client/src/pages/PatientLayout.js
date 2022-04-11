@@ -15,9 +15,8 @@ function PatientLayout({ isAuthenticated, userDetails }) {
   const { dispatchPatientActiveApts } = React.useContext(PatientAptContext);
   const { patientChatMessages, dispatchPatientChatMessages } =
     React.useContext(ChatMessageContext);
-  console.log("patient layout rendered ");
+
   React.useEffect(() => {
-    console.log("loading appointments");
     loadActiveAppointment();
   }, []);
 
