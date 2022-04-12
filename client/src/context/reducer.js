@@ -236,6 +236,7 @@ export const PatientActiveAptReducer = (state, action) => {
   switch (action.type) {
     case "LOAD_APPOINTMENTS": {
       return {
+        ...state,
         patientschedapts: action.payload.filter(
           (apt) => apt.status === "SCHEDULED"
         ),
@@ -246,7 +247,6 @@ export const PatientActiveAptReducer = (state, action) => {
           (apt) => apt.status === "ARRIVED"
         ),
         loading: false,
-        ...state,
       };
     }
     case "ADD_APPOINTMENT": {

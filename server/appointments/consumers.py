@@ -86,7 +86,7 @@ class AppointmentConsumer(AsyncJsonWebsocketConsumer):
         serializer.is_valid(raise_exception=True)
         return serializer.update(appt, serializer.validated_data)
 
-    # main consumer logic
+    # main consumer logic -- starting with connect and disconnect
     async def connect(self):
         user = self.scope['user']
 
@@ -107,7 +107,98 @@ class AppointmentConsumer(AsyncJsonWebsocketConsumer):
                 )
             await self.accept()
 
+    async def disconnect(self, code):
+        user = self.scope['user']
+        if user.is_anonymous:
+            await self.close()
+        else:
+            group = await self._get_user_group(user)
+            # unsubscribed from all groups user is a part of
+            if group:
+                await self.channel_layer.group_discard(
+                    group=f'{group}s',
+                    channel=self.channel_name
+                )
+            for appt_id in await self._get_appt_ids(user):
+                await self.channel_layer.group_discard(
+                    group=appt_id,
+                    channel=self.channel_name
+                )
+        await super().disconnect(code)
+
+    async def clin_arrived(self, content, **kwargs):
+        # clin arrived at location
+        data = content.get('data')
+        data.update({'start_time': datetime.now()})
+        updated_appt = await self._update_appointment(data)
+        appt_data = await self._get_appointment_data(updated_appt)
+
+        await self.channel_layer.group_send(
+            group=f"{updated_appt.id}",
+            message={
+                'type': 'clin.arrival.update',
+                'data': appt_data
+            }
+        )
+
+    async def clin_begin_nav(self, content, **kwargs):
+        # clinician on there way
+        data = content.get('data')
+        updated_appt = await self._update_appointment(data)
+        appt_data = await self._get_appointment_data(updated_appt)
+
+        await self.channel_layer.group_send(
+            group=f"{updated_appt.id}",
+            message={
+                'type': 'clin.on.way',
+                'data': appt_data
+            }
+        )
+
+    async def clin_book_apt(self, content, **kwargs):
+        # called when clinicians accepts patient request for apt
+        data = content.get('data')
+        group = await self._get_user_group(self.scope['user'])
+        valid = await self._check_apt_valid(self.scope['user'], group)
+        if not valid:
+            await self.send_json({
+                'type': 'apt.requested.fail',
+                'msg': 'You must complete your current appointment before booking another'
+            })
+            return
+
+        appt = await self._update_appointment(data)
+        appt_data = await self._get_appointment_data(appt)
+        # add clinician to apt group
+        await self.channel_layer.group_add(
+            group=f"{appt.id}",
+            channel=self.channel_name
+        )
+
+        await self.channel_layer.group_send(
+            group=f"{appt.id}",
+            message={
+                'type': 'apt.booked.msg',
+                'data': appt_data
+            }
+        )
+
+    async def clin_complete(self, content, **kwargs):
+        # apt marked complete by clinician
+        data = content.get('data')
+        updated_appt = await self._update_appointment(data)
+        appt_data = await self._get_appointment_data(updated_appt)
+
+        await self.channel_layer.group_send(
+            group=f"{updated_appt.id}",
+            message={
+                'type': 'clin.complete.update',
+                'data': appt_data
+            }
+        )
+
     async def create_apt(self, content, **kwargs):
+        # called when patient creates apt
         data = content.get('data')
         group = await self._get_user_group(self.scope['user'])
         valid = await self._check_apt_valid(self.scope['user'], group)
@@ -137,23 +228,8 @@ class AppointmentConsumer(AsyncJsonWebsocketConsumer):
             'data': appt_data,
         })
 
-    async def apt_requested_clins(self, message):
-        await self.send_json(
-            {
-                'type': 'apt.requested.clins',
-                'data': message.get('data')
-            }
-        )
-
-    async def apt_booked_msg(self, message):
-        await self.send_json(
-            {
-                'type': 'apt.booked.msg',
-                'data': message.get('data')
-            }
-        )
-
     async def create_new_chat_msg(self, content, **kwargs):
+        # patient/clinician create new msg
         user = self.scope['user']
         data = content.get('data')
         data.update({'author': user.id})
@@ -168,15 +244,6 @@ class AppointmentConsumer(AsyncJsonWebsocketConsumer):
             }
         )
         return
-
-    async def chat_message_created(self, message):
-
-        await self.send_json(
-            {
-                'type': 'chat.message.created',
-                'data': message.get('data')
-            }
-        )
 
     async def schedule_appointment(self, content, **kwargs):
         data = content.get('data')
@@ -194,32 +261,9 @@ class AppointmentConsumer(AsyncJsonWebsocketConsumer):
             'data': appt_data,
         })
 
-    async def clin_book_apt(self, content, **kwargs):
-        data = content.get('data')
-        group = await self._get_user_group(self.scope['user'])
-        valid = await self._check_apt_valid(self.scope['user'], group)
-        if not valid:
-            await self.send_json({
-                'type': 'apt.requested.fail',
-                'msg': 'You must complete your current appointment before booking another'
-            })
-            return
-
-        appt = await self._update_appointment(data)
-        appt_data = await self._get_appointment_data(appt)
-        # add clinician to apt group
-        await self.channel_layer.group_add(
-            group=f"{appt.id}",
-            channel=self.channel_name
-        )
-
-        await self.channel_layer.group_send(
-            group=f"{appt.id}",
-            message={
-                'type': 'apt.booked.msg',
-                'data': appt_data
-            }
-        )
+    async def search_clinicians(self):
+        clinicians = await self._get_available_clinicians()
+        await self.send_json(clinicians)
 
     async def update_appointment(self, content, **kwargs):
         data = content.get('data')
@@ -239,28 +283,8 @@ class AppointmentConsumer(AsyncJsonWebsocketConsumer):
             'data': appt_data
         })
 
-    async def disconnect(self, code):
-        user = self.scope['user']
-        if user.is_anonymous:
-            await self.close()
-        else:
-            group = await self._get_user_group(user)
-            if group:
-                await self.channel_layer.group_discard(
-                    group=f'{group}s',
-                    channel=self.channel_name
-                )
-            for appt_id in await self._get_appt_ids(user):
-                await self.channel_layer.group_discard(
-                    group=appt_id,
-                    channel=self.channel_name
-                )
-        await super().disconnect(code)
-
-    async def echo_message(self, message):
-        await self.send_json(message)
-
     async def update_apt_coords(self, content, **kwargs):
+        # used to tell patient where clinician is located
         data = content.get('data')
         apt_id = data.get('apt_id')
 
@@ -272,16 +296,29 @@ class AppointmentConsumer(AsyncJsonWebsocketConsumer):
             }
         )
 
-    async def clin_begin_nav(self, content, **kwargs):
-        data = content.get('data')
-        updated_appt = await self._update_appointment(data)
-        appt_data = await self._get_appointment_data(updated_appt)
+    # functions called by send json
+    async def apt_booked_msg(self, message):
+        await self.send_json(
+            {
+                'type': 'apt.booked.msg',
+                'data': message.get('data')
+            }
+        )
 
-        await self.channel_layer.group_send(
-            group=f"{updated_appt.id}",
-            message={
-                'type': 'clin.on.way',
-                'data': appt_data
+    async def apt_requested_clins(self, message):
+        await self.send_json(
+            {
+                'type': 'apt.requested.clins',
+                'data': message.get('data')
+            }
+        )
+
+    async def clin_arrival_update(self, message):
+
+        await self.send_json(
+            {
+                'type': 'clin.arrival.update',
+                'data': message.get('data')
             }
         )
 
@@ -294,39 +331,12 @@ class AppointmentConsumer(AsyncJsonWebsocketConsumer):
             }
         )
 
-    async def clin_arrived(self, content, **kwargs):
-        data = content.get('data')
-        data.update({'start_time': datetime.now()})
-        updated_appt = await self._update_appointment(data)
-        appt_data = await self._get_appointment_data(updated_appt)
-
-        await self.channel_layer.group_send(
-            group=f"{updated_appt.id}",
-            message={
-                'type': 'clin.arrival.update',
-                'data': appt_data
-            }
-        )
-
-    async def clin_arrival_update(self, message):
+    async def chat_message_created(self, message):
 
         await self.send_json(
             {
-                'type': 'clin.arrival.update',
+                'type': 'chat.message.created',
                 'data': message.get('data')
-            }
-        )
-    
-    async def clin_complete(self, content, **kwargs):
-        data = content.get('data')
-        updated_appt = await self._update_appointment(data)
-        appt_data = await self._get_appointment_data(updated_appt)
-
-        await self.channel_layer.group_send(
-            group=f"{updated_appt.id}",
-            message={
-                'type': 'clin.complete.update',
-                'data': appt_data
             }
         )
 
@@ -339,6 +349,9 @@ class AppointmentConsumer(AsyncJsonWebsocketConsumer):
             }
         )
 
+    async def echo_message(self, message):
+        await self.send_json(message)
+
     async def update_coords(self, message):
         await self.send_json(
             {
@@ -347,40 +360,26 @@ class AppointmentConsumer(AsyncJsonWebsocketConsumer):
             }
         )
 
+    # main logic for processing 
     async def receive_json(self, content, **kwargs):
         message_type = content.get('type')
-        if message_type == 'schedule.appointment':
-            await self.schedule_appointment(content)
-        elif message_type == 'create.apt':
-            await self.create_apt(content)
-        elif message_type == 'clin.book.apt':
-            await self.clin_book_apt(content)
-        elif message_type == 'get.clinicians':
-            await self.search_clinicians()
-        elif message_type == 'update.appointment':
-            await self.update_appointment(content)
-        elif message_type == 'echo.message':
-            await self.echo_message(content)
-        elif message_type == 'create.new_chat_msg':
-            await self.create_new_chat_msg(content)
-        elif message_type == 'update.coords':
-            await self.update_apt_coords(content)
-        elif message_type == 'clin.begin.nav':
-            await self.clin_begin_nav(content)
-        elif message_type == 'clin.arrived':
-            await self.clin_arrived(content)
-        elif message_type == 'clin.apt.complete':
-            await self.clin_complete(content)
+        # get function from mapper
+        await self._message_type_mapper(message_type, content)
 
-    async def search_clinicians(self):
-        clinicians = await self._get_available_clinicians()
-        await self.send_json(clinicians)
-    
-    def message_type_mapper(self, message_type, content):
+    def _message_type_mapper(self, message_type, content):
+        # helper for processing
         mapper = {
             'schedule.appointment': self.schedule_appointment(content),
             'create.apt': self.create_apt(content),
-            'clin.book.apt': self.clin_book_apt(content)
+            'clin.book.apt': self.clin_book_apt(content),
+            'get.clinicians': self.search_clinicians(),
+            'update.appointment': self.update_appointment(content),
+            'echo.message': self.echo_message(content),
+            'create.new_chat_msg': self.create_new_chat_msg(content),
+            'update.coords': self.update_apt_coords(content),
+            'clin.begin.nav': self.clin_begin_nav(content),
+            'clin.arrived': self.clin_arrived(content),
+            'clin.apt.complete': self.clin_complete(content)
         }
-    
+
         return mapper[message_type]

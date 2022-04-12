@@ -85,10 +85,11 @@ function PatientLayout({ isAuthenticated, userDetails }) {
   }, []);
 
   const loadActiveAppointment = async () => {
-    const { response, isError } = await getPatientActiveApts("Active");
+    const { response, isError } = await getPatientActiveApts("active");
+    console.log("res", response);
     const apt_id = response?.data[0]?.id;
     dispatchPatientActiveApts({
-      type: "ADD_APPOINTMENT",
+      type: "LOAD_APPOINTMENTS",
       payload: response.data,
     });
     if (apt_id) {

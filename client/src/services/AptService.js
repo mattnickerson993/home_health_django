@@ -173,7 +173,7 @@ export const getClinActiveApts = async (status) => {
 };
 
 export const getPatientActiveApts = async (status) => {
-  const url = api.appointments.scheduledApts(status);
+  const url = api.appointments.activeApts(status);
   const token = getAccessToken();
   const headers = { Authorization: `JWT ${token}` };
   try {
