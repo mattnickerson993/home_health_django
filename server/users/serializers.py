@@ -57,13 +57,15 @@ class UserSerializer(serializers.ModelSerializer):
 
 class UserFullImageSerializer(serializers.ModelSerializer):
     photo_url = serializers.SerializerMethodField('get_image_url')
-    # photo = serializers.ImageField(use_url=False)
+
     class Meta:
         model = USER
         fields = ('photo_url',)
 
     def get_image_url(self, obj):
+        # needed to display chat images --- would change if media files hosted via s3 ect
         return f"{Site.objects.get_current().domain}{obj.photo.url}"
+
 
 class UserListSerializer(serializers.ModelSerializer):
 

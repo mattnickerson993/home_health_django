@@ -43,7 +43,6 @@ INSTALLED_APPS = [
     # local
     'appointments',
     'apt_messages',
-    'trips',
     'users',
 ]
 
@@ -203,7 +202,7 @@ SIMPLE_JWT = {
     'BLACKLIST_AFTER_ROTATION': False,
     'UPDATE_LAST_LOGIN': True,
     'AUTH_HEADER_TYPES': ('Bearer', 'JWT',),
-    # will accepy Authorizatio in header
+    # will accepy Authorization in header
     'AUTH_HEADER_NAME': 'HTTP_AUTHORIZATION',
 }
 

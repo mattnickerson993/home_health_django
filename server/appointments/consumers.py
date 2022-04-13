@@ -1,4 +1,5 @@
 from datetime import datetime
+
 from django.contrib.auth import get_user_model
 from django.shortcuts import get_object_or_404
 
@@ -6,9 +7,9 @@ from channels.db import database_sync_to_async
 from channels.generic.websocket import AsyncJsonWebsocketConsumer
 
 from appointments.models import Appointment
-from users.serializers import UserListSerializer
-from .serializers import AppointmentCreateSerializer, AppointmentUpdateSerializer, NestedAppointmentSerializer
 from apt_messages.serializers import MessageCreateSerializer, MessageSerializer
+from .serializers import AppointmentCreateSerializer, AppointmentUpdateSerializer, NestedAppointmentSerializer
+from users.serializers import UserListSerializer
 
 
 User = get_user_model()
@@ -21,7 +22,7 @@ class AppointmentConsumer(AsyncJsonWebsocketConsumer):
     @database_sync_to_async
     def _check_apt_valid(self, user, group):
 
-        # patient or clinician cant commit to another apt when one is unresolved
+        # patient or clinician cannot commit to another apt when one is unresolved
 
         statuses = [
             Appointment.REQUESTED, Appointment.IN_ROUTE,
@@ -113,7 +114,7 @@ class AppointmentConsumer(AsyncJsonWebsocketConsumer):
             await self.close()
         else:
             group = await self._get_user_group(user)
-            # unsubscribed from all groups user is a part of
+            # unsubscribe user from all socket  groups
             if group:
                 await self.channel_layer.group_discard(
                     group=f'{group}s',

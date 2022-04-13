@@ -8,8 +8,6 @@ class User(AbstractUser):
     username = None
     email = models.EmailField(unique=True, max_length=255)
     photo = models.ImageField(upload_to='profile_pics', null=True, blank=True)
-    current_lat = models.DecimalField(max_digits=10, decimal_places=2, null=True)
-    current_lon = models.DecimalField(max_digits=10, decimal_places=2, null=True)
 
     USERNAME_FIELD = 'email'
     REQUIRED_FIELDS = ['first_name', 'last_name']

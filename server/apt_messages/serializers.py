@@ -2,7 +2,7 @@ from rest_framework import serializers
 
 from .models import AptMessages
 from appointments.serializers import NestedAppointmentSerializer
-from users.serializers import UserSerializer, UserFullImageSerializer
+from users.serializers import UserFullImageSerializer
 
 
 class MessageSerializer(serializers.ModelSerializer):

@@ -5,11 +5,12 @@ from django.db import models
 
 USER = get_user_model()
 
+
 class Appointment(models.Model):
     ARRIVED = 'ARRIVED'
     COMPLETE = 'COMPLETE'
     CANCELED = 'CANCELED'
-    IN_ROUTE= 'IN_ROUTE'
+    IN_ROUTE = 'IN_ROUTE'
     REQUESTED = 'REQUESTED'
     RESCHEDULED = 'RESCHEDULED'
     SCHEDULED = 'SCHEDULED'
@@ -17,9 +18,9 @@ class Appointment(models.Model):
     APPOINTMENT_STATUSES = [
         (ARRIVED, 'arrived'),
         (COMPLETE, 'complete'),
-        (CANCELED,'canceled'),
+        (CANCELED, 'canceled'),
         (IN_ROUTE, 'in_route'),
-        (REQUESTED,'requested'),
+        (REQUESTED, 'requested'),
         (RESCHEDULED, 'rescheduled'),
         (SCHEDULED, 'scheduled'),
     ]

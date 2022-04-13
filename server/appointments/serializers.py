@@ -1,4 +1,3 @@
-from pkg_resources import require
 from rest_framework import serializers
 
 from .models import Appointment
@@ -13,6 +12,7 @@ class AppointmentListSerializer(serializers.ModelSerializer):
         model = Appointment
         fields = '__all__'
         depth = 1
+
 
 class AppointmentCreateSerializer(serializers.ModelSerializer):
 
