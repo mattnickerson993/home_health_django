@@ -35,6 +35,15 @@ function ClinicianLayout({ isAuthenticated, userDetails }) {
           patient: { first_name, last_name },
         } = message.data;
         toast.info(`${first_name} ${last_name} has requested an appointment`);
+      } else if (message.type === "patient.canceled") {
+        dispatchClinActiveApts({
+          type: "ADD_APPOINTMENT",
+          payload: message.data,
+        });
+        const {
+          patient: { first_name, last_name },
+        } = message.data;
+        toast.info(`${first_name} ${last_name} canceled there appointment`);
       } else if (message.type === "clin.on.way") {
         console.log("working", message.data);
         dispatchClinActiveApts({

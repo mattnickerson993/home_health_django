@@ -26,6 +26,12 @@ function PatientLayout({ isAuthenticated, userDetails }) {
       console.log("msg", message);
       if (message.type === "apt.requested.success") {
         toast.success("Your Appointment has been requested");
+      } else if (message.type === "patient.canceled") {
+        dispatchPatientActiveApts({
+          type: "ADD_APPOINTMENT",
+          payload: message.data,
+        });
+        toast.success(`Appointment successfully canceled`);
       } else if (message.type === "clin.complete.update") {
         dispatchPatientActiveApts({
           type: "ADD_APPOINTMENT",

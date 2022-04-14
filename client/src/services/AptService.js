@@ -103,38 +103,17 @@ export const clinComplete = (apt_id) => {
   };
   _socket.next(message);
 };
-// export const createTrip = (trip) => {
-//   connect();
-//   const message = {
-//     type: "create.trip",
-//     data: trip,
-//   };
-//   _socket.next(message);
-// };
 
-// export const getTrip = async (id) => {
-//   const url = `${process.env.REACT_APP_BASE_URL}/api/trip/${id}/`;
-//   const token = getAccessToken();
-//   const headers = { Authorization: `Bearer ${token}` };
-//   try {
-//     const response = await axios.get(url, { headers });
-//     return { response, isError: false };
-//   } catch (response) {
-//     return { response, isError: true };
-//   }
-// };
-
-// export const getTrips = async () => {
-//   const url = `${process.env.REACT_APP_BASE_URL}/api/trip/`;
-//   const token = getAccessToken();
-//   const headers = { Authorization: `Bearer ${token}` };
-//   try {
-//     const response = await axios.get(url, { headers });
-//     return { response, isError: false };
-//   } catch (response) {
-//     return { response, isError: true };
-//   }
-// };
+export const cancelApt = (apt_id) => {
+  const message = {
+    type: "patient.apt.cancel",
+    data: {
+      id: apt_id,
+      status: "CANCELED",
+    },
+  };
+  _socket.next(message);
+};
 
 export const getAvailablePatients = async () => {
   const url = api.appointments.availablePatients;

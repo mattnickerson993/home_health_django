@@ -127,6 +127,21 @@ class AppointmentConsumer(AsyncJsonWebsocketConsumer):
                 )
         await super().disconnect(code)
 
+    async def cancel_apt(self, content, **kwargs):
+        # apt marked canceled by patient
+        data = content.get('data')
+        data.update({'canceled_at': datetime.now()})
+        updated_appt = await self._update_appointment(data)
+        appt_data = await self._get_appointment_data(updated_appt)
+
+        await self.channel_layer.group_send(
+            group=f"{updated_appt.id}",
+            message={
+                'type': 'patient.canceled',
+                'data': appt_data
+            }
+        )
+
     async def clin_arrived(self, content, **kwargs):
         # clin arrived at location
         data = content.get('data')
@@ -353,6 +368,15 @@ class AppointmentConsumer(AsyncJsonWebsocketConsumer):
     async def echo_message(self, message):
         await self.send_json(message)
 
+    async def patient_canceled(self, message):
+
+        await self.send_json(
+            {
+                'type': 'patient.canceled',
+                'data': message.get('data')
+            }
+        )
+
     async def update_coords(self, message):
         await self.send_json(
             {
@@ -380,7 +404,8 @@ class AppointmentConsumer(AsyncJsonWebsocketConsumer):
             'update.coords': self.update_apt_coords(content),
             'clin.begin.nav': self.clin_begin_nav(content),
             'clin.arrived': self.clin_arrived(content),
-            'clin.apt.complete': self.clin_complete(content)
+            'clin.apt.complete': self.clin_complete(content),
+            'patient.apt.cancel': self.cancel_apt(content)
         }
 
         return mapper[message_type]

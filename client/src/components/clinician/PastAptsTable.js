@@ -154,16 +154,33 @@ const PastAptsTable = ({ apts }) => {
                       <TableCell scope="row">
                         {`${appointment.patient.email}`}
                       </TableCell>
-                      <TableCell>{`${new Date(
+                      <TableCell>{`${
                         appointment.start_time
-                      ).toLocaleDateString()}`}</TableCell>
-                      <TableCell>{`${new Date(
+                          ? new Date(
+                              appointment.start_time
+                            ).toLocaleDateString()
+                          : new Date(
+                              appointment.canceled_at
+                            ).toLocaleDateString()
+                      }`}</TableCell>
+                      <TableCell>{`${
                         appointment.start_time
-                      ).toLocaleTimeString([], {
-                        hour: "2-digit",
-                        minute: "2-digit",
-                        hour12: true,
-                      })}`}</TableCell>
+                          ? new Date(appointment.start_time).toLocaleTimeString(
+                              [],
+                              {
+                                hour: "2-digit",
+                                minute: "2-digit",
+                                hour12: true,
+                              }
+                            )
+                          : new Date(
+                              appointment.canceled_at
+                            ).toLocaleTimeString([], {
+                              hour: "2-digit",
+                              minute: "2-digit",
+                              hour12: true,
+                            })
+                      }`}</TableCell>
                       <TableCell>{appointment.status}</TableCell>
                     </TableRow>
                   ))}

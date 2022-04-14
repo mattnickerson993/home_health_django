@@ -1,7 +1,8 @@
-import { CircularProgress, Typography } from "@mui/material";
+import { Button, CircularProgress, Typography } from "@mui/material";
 import { Box } from "@mui/system";
 import React from "react";
 import { PatientAptContext } from "../../context";
+import { cancelApt } from "../../services/AptService";
 import PatientMap from "./PatientMap";
 
 const PatientActApts = () => {
@@ -30,14 +31,16 @@ const PatientActApts = () => {
   const aptsPresent =
     schedAptsPresent || inRouteAptsPresent || arrivedAptsPresent;
   // only for in route apts
-  console.log("apts Present", aptsPresent);
-  console.log("schedule apts present", schedAptsPresent);
-  console.log("ir", inRouteAptsPresent);
-  console.log("arrived", arrivedAptsPresent);
+
   const patient_address = inRouteAptsPresent
     ? patient_inroute_apts[0].patient_address
     : null;
 
+  const apt_id = schedAptsPresent ? patientschedapts[0].id : null;
+
+  const handleCancel = async (id) => {
+    await cancelApt(id);
+  };
   React.useEffect(() => {
     if (clincoords) {
       setLat(clincoords.lat);
@@ -55,6 +58,7 @@ const PatientActApts = () => {
           Your Clinician is not in route yet. You'll be notified once they are
           on there way!
         </Box>
+        <Button onClick={() => handleCancel(apt_id)}>Cancel Appointment</Button>
       </>
     );
   } else if (arrivedAptsPresent) {

@@ -77,7 +77,6 @@ const PatientPastAptsTable = ({ apts }) => {
     setRowsPerPage(parseInt(event.target.value, 10));
     setPage(0);
   };
-
   return (
     <>
       {apts && (
@@ -154,16 +153,33 @@ const PatientPastAptsTable = ({ apts }) => {
                       <TableCell scope="row">
                         {`${appointment.clinician.email}`}
                       </TableCell>
-                      <TableCell>{`${new Date(
+                      <TableCell>{`${
                         appointment.start_time
-                      ).toLocaleDateString()}`}</TableCell>
-                      <TableCell>{`${new Date(
+                          ? new Date(
+                              appointment.start_time
+                            ).toLocaleDateString()
+                          : new Date(
+                              appointment.canceled_at
+                            ).toLocaleDateString()
+                      }`}</TableCell>
+                      <TableCell>{`${
                         appointment.start_time
-                      ).toLocaleTimeString([], {
-                        hour: "2-digit",
-                        minute: "2-digit",
-                        hour12: true,
-                      })}`}</TableCell>
+                          ? new Date(appointment.start_time).toLocaleTimeString(
+                              [],
+                              {
+                                hour: "2-digit",
+                                minute: "2-digit",
+                                hour12: true,
+                              }
+                            )
+                          : new Date(
+                              appointment.canceled_at
+                            ).toLocaleTimeString([], {
+                              hour: "2-digit",
+                              minute: "2-digit",
+                              hour12: true,
+                            })
+                      }`}</TableCell>
                       <TableCell>{appointment.status}</TableCell>
                     </TableRow>
                   ))}
