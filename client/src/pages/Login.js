@@ -10,8 +10,9 @@ import { api } from "../api";
 import axios from "axios";
 import { headers } from "../config/config";
 import { setLocalStorage } from "../utils/storage";
-import { Navigate } from "react-router-dom";
+import { Link, Navigate } from "react-router-dom";
 import { AuthContext } from "../context";
+import { Card } from "@mui/material";
 
 export default function LogIn() {
   const [loggedIn, setLoggedIn] = React.useState(false);
@@ -99,6 +100,34 @@ export default function LogIn() {
               Sign In
             </Button>
           </Box>
+          <Card
+            sx={{
+              display: "flex",
+              flexDirection: "column",
+              minHeight: 100,
+              alignItems: "center",
+              justifyContent: "center",
+              minWidth: 345,
+            }}
+          >
+            <Typography
+              sx={{
+                margin: (theme) => theme.spacing(1),
+                textDecoration: "none",
+              }}
+              variant="body2"
+            >
+              Need an account?
+            </Typography>
+            <Link
+              styles={{
+                textDecoration: "none",
+              }}
+              to="/register"
+            >
+              <Button color="primary">Register</Button>
+            </Link>
+          </Card>
         </Box>
       </Container>
     </>

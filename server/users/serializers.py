@@ -52,10 +52,11 @@ class UserSerializer(serializers.ModelSerializer):
             'id', 'email', 'password1', 'password2',
             'first_name', 'last_name', 'group', 'photo'
         )
-        read_only_fields = ('id', 'photo')
+        read_only_fields = ('id',)
 
 
 class UserFullImageSerializer(serializers.ModelSerializer):
+    # read only field
     photo_url = serializers.SerializerMethodField('get_image_url')
 
     class Meta:

@@ -11,10 +11,9 @@ import {
   Button,
   Card,
   CardContent,
-  CardHeader,
   CircularProgress,
+  Fab,
   FormControl,
-  InputAdornment,
   InputLabel,
   MenuItem,
   Select,
@@ -22,10 +21,11 @@ import {
   Typography,
 } from "@mui/material";
 import { headers } from "../config/config";
-import { CheckCircleOutline, HighlightOff } from "@mui/icons-material";
+import { CheckCircleOutline, HighlightOff, Label } from "@mui/icons-material";
 import { FormInputDropdown } from "../components/Dropdown";
 import { errorIcon, validIcon } from "../components/Icons";
 import { ThemeContext } from "@emotion/react";
+import AddIcon from "@mui/icons-material/Add";
 
 const SignUp = () => {
   const [loading, setLoading] = React.useState(false);
@@ -39,10 +39,18 @@ const SignUp = () => {
   } = useForm({ mode: "onBlur" });
 
   async function onSubmit(data) {
+    console.log("data", data);
     setLoading(true);
     setError("");
-    const { email, firstname, lastname, group, password, confirmpassword } =
-      data;
+    const {
+      email,
+      firstname,
+      lastname,
+      photo,
+      group,
+      password,
+      confirmpassword,
+    } = data;
     try {
       if (password !== confirmpassword) {
         setError("Passwords must match");
@@ -55,6 +63,7 @@ const SignUp = () => {
       formData.append("password1", password);
       formData.append("password2", confirmpassword);
       formData.append("group", group);
+      formData.append("photo", photo[0]);
 
       const res = await axios.post(api.auth.register, formData, headers);
       if (res.status !== 201) {
@@ -175,6 +184,41 @@ const SignUp = () => {
                     </FormControl>
                   )}
                 />
+                <input
+                  name="photo"
+                  type="file"
+                  {...register("photo", {
+                    required: true,
+                  })}
+                />
+                {/* <Controller
+                  name="photo"
+                  control={control}
+                  rules={{ required: true }}
+                  defaultValue=""
+                  render={({ field }) => (
+                    <label htmlFor="photo">
+                      <input
+                        {...field}
+                        type="file"
+                        id="photo"
+                        style={{ display: "none" }}
+                        name="photo"
+                      />
+                      <Fab
+                        color="secondary"
+                        size="small"
+                        aria-label="add"
+                        component="span"
+                        variant="extended"
+                        sx={{ margin: (theme) => theme.spacing(2) }}
+                      >
+                        <AddIcon /> Upload Photo
+                      </Fab>
+                    </label>
+                  )}
+                ></Controller> */}
+
                 <TextField
                   name="password"
                   {...register("password", {
