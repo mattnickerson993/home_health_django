@@ -22,3 +22,6 @@ class AptMessages(models.Model):
     content = models.TextField(blank=True, null=True)
     status = models.CharField(choices=MESSAGE_STATUSES, max_length=255, blank=True, null=True, default=ACTIVE)
     created_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"{self.author.email} : {self.content[:50]}"

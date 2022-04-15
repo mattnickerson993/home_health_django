@@ -1,7 +1,9 @@
 from rest_framework import generics, permissions
 
+from .permissions import InvolvedInAppointmentOrStaff, IsClinician
 from .models import Appointment
 from .serializers import (
+    AppointmentDetailSerializer,
     AppointmentListSerializer,
     AppointmentCreateSerializer,
     AppointmentUpdateSerializer,
@@ -60,15 +62,15 @@ class AppointmentCreateView(generics.CreateAPIView):
 
 
 class AppointmentDetailView(generics.RetrieveAPIView):
-    permission_classes = [permissions.IsAuthenticated]
-    serializer_class = Appointment
+    permission_classes = [InvolvedInAppointmentOrStaff]
+    serializer_class = AppointmentDetailSerializer
     lookup_field = 'id'
     lookup_url_kwarg = 'appointment_id'
     queryset = Appointment.objects.all()
 
 
 class AppointmentUpdateView(generics.UpdateAPIView):
-    permission_classes = [permissions.IsAuthenticated]
+    permission_classes = [InvolvedInAppointmentOrStaff]
     queryset = Appointment.objects.all()
     serializer_class = AppointmentUpdateSerializer
     lookup_field = 'id'
@@ -76,6 +78,6 @@ class AppointmentUpdateView(generics.UpdateAPIView):
 
 
 class AppointmentAvailablePatientView(generics.ListAPIView):
-    permission_classes = [permissions.IsAuthenticated]
+    permission_classes = [IsClinician]
     queryset = Appointment.objects.filter(status=Appointment.REQUESTED).order_by('-id')
     serializer_class = AppointmentListSerializer
