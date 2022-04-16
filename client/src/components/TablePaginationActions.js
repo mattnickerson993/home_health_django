@@ -3,12 +3,11 @@ import FirstPageIcon from "@mui/icons-material/FirstPage";
 import LastPageIcon from "@mui/icons-material/LastPage";
 import KeyboardArrowRight from "@mui/icons-material/KeyboardArrowRight";
 import KeyboardArrowLeft from "@mui/icons-material/KeyboardArrowLeft";
-import { usePaginationStyles } from "../styles";
 import { Box } from "@mui/system";
+
 // table pagination
 export default function TablePaginationActions(props) {
   const { count, page, rowsPerPage, onPageChange } = props;
-  console.log(count, page, rowsPerPage);
   const handleFirstPageButtonClick = (event) => {
     onPageChange(event, 0);
   };

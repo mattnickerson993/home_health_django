@@ -12,10 +12,6 @@ const AptCard = ({ apt }) => {
 
   async function bookApt(apt_id) {
     await clinBookApt(apt_id);
-    // dispatchClinicianApts({
-    //   type: "REMOVE_APPOINTMENT",
-    //   payload: { id: apt_id },
-    // });
   }
 
   return (

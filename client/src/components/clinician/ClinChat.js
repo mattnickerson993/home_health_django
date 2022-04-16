@@ -1,23 +1,11 @@
 import React from "react";
 import Box from "@mui/material/Box";
 import Paper from "@mui/material/Paper";
-import {
-  AppBar,
-  Avatar,
-  Divider,
-  Fab,
-  Grid,
-  List,
-  ListItem,
-  ListItemAvatar,
-  ListItemText,
-  TextField,
-  Typography,
-} from "@mui/material";
+import { Divider, Fab, Grid, List, TextField, Typography } from "@mui/material";
 import SendIcon from "@mui/icons-material/Send";
 import { Chat } from "@mui/icons-material";
 import { ChatMessageContext, ClinicianAptContext } from "../../context";
-import { getAptMessages, sendNewChatMsg } from "../../services/AptService";
+import { sendNewChatMsg } from "../../services/AptService";
 import ChatMessage from "./ChatMessage";
 
 const ClinChat = () => {

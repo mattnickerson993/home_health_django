@@ -4,7 +4,7 @@ import AvailablePatients from "./clinician/AvailablePatients";
 import PatientAptSchedule from "./patient/PatientAptSchedule";
 
 const Main = () => {
-  const { isAuthenticated, userDetails } = useAuthState();
+  const { userDetails } = useAuthState();
 
   const { group } = userDetails;
   return (

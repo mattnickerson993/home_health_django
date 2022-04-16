@@ -7,7 +7,6 @@ import { Outlet } from "react-router-dom";
 import { Beenhere, Chat } from "@mui/icons-material";
 import StarBorder from "@mui/icons-material/StarBorder";
 import PeopleOutline from "@mui/icons-material/PeopleOutline";
-import PatientAptSchedule from "./patient/PatientAptSchedule";
 
 const DrawerHeader = styled("div")(({ theme }) => ({
   display: "flex",

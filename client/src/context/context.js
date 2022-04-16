@@ -1,22 +1,14 @@
-import axios from "axios";
 import React from "react";
-import { api } from "../api";
-import LogIn from "../pages/Login";
-import { getRefreshToken, setLocalStorage } from "../utils/storage";
 
 import {
   initialState,
   AuthReducer,
   ClinicianAppointmentReducer,
   initialClinicianAptState,
-  ClinSchedAptReducer,
-  initClinSchedAptState,
   ClinicianChatMessageReducer,
   initialClinChatMsgState,
   PatientChatMessageReducer,
   initialPatientChatMsgState,
-  PatientSchedAptReducer,
-  initPatientSchedAptState,
   ClinActiveAptReducer,
   initClinActiveAptState,
   initPatientActiveAptState,
@@ -35,6 +27,7 @@ export const AuthProvider = ({ children }) => {
   );
 };
 
+// clinician appointments ( handles available patients and specifics of patient when selected)
 export const ClinicianAptContext = React.createContext();
 
 export const ClinicianAptProvider = ({ children }) => {
@@ -62,6 +55,8 @@ export const ClinicianAptProvider = ({ children }) => {
   );
 };
 
+// patient appointments
+
 export const PatientAptContext = React.createContext();
 
 export const PatientAptProvider = ({ children }) => {
@@ -81,6 +76,8 @@ export const PatientAptProvider = ({ children }) => {
     </PatientAptContext.Provider>
   );
 };
+
+// chat
 
 export const ChatMessageContext = React.createContext();
 

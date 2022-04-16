@@ -21,11 +21,7 @@ import {
   Typography,
 } from "@mui/material";
 import { headers } from "../config/config";
-import { CheckCircleOutline, HighlightOff, Label } from "@mui/icons-material";
-import { FormInputDropdown } from "../components/Dropdown";
 import { errorIcon, validIcon } from "../components/Icons";
-import { ThemeContext } from "@emotion/react";
-import AddIcon from "@mui/icons-material/Add";
 
 const SignUp = () => {
   const [loading, setLoading] = React.useState(false);

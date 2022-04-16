@@ -1,6 +1,5 @@
 import { blue, teal, red } from "@mui/material/colors";
 import { createTheme } from "@mui/material";
-import { palette } from "@mui/system";
 
 const colors = {
   primary: blue[500],

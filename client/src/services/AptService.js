@@ -16,7 +16,6 @@ export const connect = () => {
     );
     _socket.subscribe();
     messages = _socket.pipe(share());
-    // messages.subscribe((message) => console.log(message));
   }
 };
 
@@ -29,7 +28,6 @@ export const getAvialableClinicians = () => {
 };
 
 export const createApt = (apt) => {
-  // connect();
   const message = {
     type: "create.apt",
     data: apt,
@@ -38,7 +36,6 @@ export const createApt = (apt) => {
 };
 
 export const updateCoords = (coords, apt_id) => {
-  console.log("updating");
   const message = {
     type: "update.coords",
     data: {

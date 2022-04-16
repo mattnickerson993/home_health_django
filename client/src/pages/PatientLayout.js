@@ -4,7 +4,6 @@ import {
   connect,
   getAptMessages,
   getPatientActiveApts,
-  getPatientSchedApts,
   messages,
 } from "../services/AptService";
 import { toast } from "react-toastify";

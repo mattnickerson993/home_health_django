@@ -1,4 +1,4 @@
-import * as React from "react";
+import React from "react";
 import Avatar from "@mui/material/Avatar";
 import Button from "@mui/material/Button";
 import TextField from "@mui/material/TextField";
@@ -9,7 +9,6 @@ import Container from "@mui/material/Container";
 import { api } from "../api";
 import axios from "axios";
 import { headers } from "../config/config";
-import { setLocalStorage } from "../utils/storage";
 import { Link, Navigate } from "react-router-dom";
 import { AuthContext } from "../context";
 import { Card } from "@mui/material";

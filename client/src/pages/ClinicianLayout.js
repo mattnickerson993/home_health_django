@@ -3,7 +3,6 @@ import ClinicianSidebar from "../components/ClinicianSidebar";
 import {
   connect,
   getAptMessages,
-  getClinMessages,
   getClinActiveApts,
   messages,
 } from "../services/AptService";

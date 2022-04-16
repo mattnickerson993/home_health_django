@@ -7,11 +7,6 @@ import PatientPstApts from "../components/patient/PatientPstApts";
 import PatientChat from "../components/patient/PatientChat";
 
 export const routes = [
-  //   {
-  //     path: "/",
-  //     component: <Layout />,
-  //     exact: true,
-  //   },
   {
     path: "/clinician_active_apts",
     component: <ClinicianActiveApts />,
@@ -42,20 +37,6 @@ export const routes = [
     component: <PatientChat />,
     exact: true,
   },
-  //   {
-  //     path: "/dashboard/",
-  //     component: <Dashboard />,
-  //     exact: true,
-  //     private: true,
-  //   },
-  //   {
-  //     path: "/login/",
-  //     component: <LogIn />,
-  //   },
-  //   {
-  //     path: "/register/",
-  //     component: <Register />,
-  //   },
   {
     path: "*",
     component: <NotFound />,

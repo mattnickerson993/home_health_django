@@ -5,7 +5,7 @@ import { Divider, Fab, Grid, List, TextField, Typography } from "@mui/material";
 import SendIcon from "@mui/icons-material/Send";
 import { Chat } from "@mui/icons-material";
 import { ChatMessageContext, PatientAptContext } from "../../context";
-import { getAptMessages, sendNewChatMsg } from "../../services/AptService";
+import { sendNewChatMsg } from "../../services/AptService";
 import PatientChatMessage from "./PatientChatMsg";
 
 const PatientChat = () => {

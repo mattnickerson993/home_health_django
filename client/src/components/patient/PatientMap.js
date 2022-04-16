@@ -6,7 +6,6 @@ import {
   GoogleMap,
   LoadScript,
   Marker,
-  useLoadScript,
 } from "@react-google-maps/api";
 import PatientDistanceCard from "./PatientDistanceCard";
 
