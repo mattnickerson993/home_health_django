@@ -26,64 +26,88 @@ function ClinicianLayout({ isAuthenticated, userDetails }) {
   React.useEffect(() => {
     connect();
     const subscription = messages.subscribe((message) => {
-      if (message.type === "apt.requested.clins") {
-        dispatchClinicianApts({
-          type: "ADD_APPOINTMENT",
-          payload: message.data,
-        });
-        const {
-          patient: { first_name, last_name },
-        } = message.data;
-        toast.info(`${first_name} ${last_name} has requested an appointment`);
-      } else if (message.type === "patient.canceled") {
-        dispatchClinActiveApts({
-          type: "ADD_APPOINTMENT",
-          payload: message.data,
-        });
-        const {
-          patient: { first_name, last_name },
-        } = message.data;
-        toast.info(`${first_name} ${last_name} canceled there appointment`);
-      } else if (message.type === "clin.on.way") {
-        console.log("working", message.data);
-        dispatchClinActiveApts({
-          type: "ADD_APPOINTMENT",
-          payload: message.data,
-        });
-      } else if (
-        message.type === "clin.arrival.update" ||
-        message.type === "clin.complete.update"
-      ) {
-        dispatchClinActiveApts({
-          type: "ADD_APPOINTMENT",
-          payload: message.data,
-        });
-      } else if (message.type === "chat.message.created") {
-        dispatchClinicianChatMessages({
-          type: "ADD_MESSAGE",
-          payload: message.data,
-        });
-      } else if (message.type === "apt.requested.fail") {
-        toast.error(`${message.msg}`);
-      } else if (message.type === "apt.booked.msg") {
-        const {
-          patient: {
-            first_name: patient_first_name,
-            last_name: patient_last_name,
-          },
-          id: apt_id,
-        } = message.data;
-        dispatchClinicianApts({
-          type: "REMOVE_APPOINTMENT",
-          payload: { id: apt_id },
-        });
-        dispatchClinActiveApts({
-          type: "ADD_APPOINTMENT",
-          payload: message.data,
-        });
-        toast.info(
-          `Your appointment has been booked with ${patient_first_name} ${patient_last_name} `
-        );
+      console.log("msg type", message.type);
+      switch (message.type) {
+        case "apt.requested.clins": {
+          dispatchClinicianApts({
+            type: "ADD_APPOINTMENT",
+            payload: message.data,
+          });
+          const {
+            patient: { first_name, last_name },
+          } = message.data;
+          toast.info(`${first_name} ${last_name} has requested an appointment`);
+          break;
+        }
+        case "patient.canceled": {
+          dispatchClinActiveApts({
+            type: "ADD_APPOINTMENT",
+            payload: message.data,
+          });
+          const {
+            patient: { first_name, last_name },
+          } = message.data;
+          toast.info(`${first_name} ${last_name} canceled there appointment`);
+          break;
+        }
+        case "clin.on.way": {
+          dispatchClinActiveApts({
+            type: "ADD_APPOINTMENT",
+            payload: message.data,
+          });
+          break;
+        }
+        case "clin.arrival.update": {
+          dispatchClinActiveApts({
+            type: "ADD_APPOINTMENT",
+            payload: message.data,
+          });
+          break;
+        }
+        case "clin.complete.update": {
+          dispatchClinActiveApts({
+            type: "ADD_APPOINTMENT",
+            payload: message.data,
+          });
+          break;
+        }
+        case "chat.message.created": {
+          dispatchClinicianChatMessages({
+            type: "ADD_MESSAGE",
+            payload: message.data,
+          });
+          break;
+        }
+        case "apt.requested.fail": {
+          toast.error(`${message.msg}`);
+          break;
+        }
+        case "apt.booked.msg": {
+          const {
+            patient: {
+              first_name: patient_first_name,
+              last_name: patient_last_name,
+            },
+            id: apt_id,
+          } = message.data;
+          dispatchClinicianApts({
+            type: "REMOVE_APPOINTMENT",
+            payload: { id: apt_id },
+          });
+          dispatchClinActiveApts({
+            type: "ADD_APPOINTMENT",
+            payload: message.data,
+          });
+          toast.info(
+            `Your appointment has been booked with ${patient_first_name} ${patient_last_name} `
+          );
+          break;
+        }
+        case "update.coords": {
+          break;
+        }
+        default:
+          break;
       }
     });
     console.log("websocket connected");

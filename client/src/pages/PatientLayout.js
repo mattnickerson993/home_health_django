@@ -23,62 +23,91 @@ function PatientLayout({ isAuthenticated, userDetails }) {
   React.useEffect(() => {
     connect();
     const subscription = messages.subscribe((message) => {
-      console.log("msg", message);
-      if (message.type === "apt.requested.success") {
-        toast.success("Your Appointment has been requested");
-      } else if (message.type === "patient.canceled") {
-        dispatchPatientActiveApts({
-          type: "ADD_APPOINTMENT",
-          payload: message.data,
-        });
-        toast.success(`Appointment successfully canceled`);
-      } else if (message.type === "clin.complete.update") {
-        dispatchPatientActiveApts({
-          type: "ADD_APPOINTMENT",
-          payload: message.data,
-        });
-      } else if (message.type === "clin.arrival.update") {
-        dispatchPatientActiveApts({
-          type: "ADD_APPOINTMENT",
-          payload: message.data,
-        });
-        const {
-          clinician: { first_name: clin_first_name, last_name: clin_last_name },
-        } = message.data;
-        toast.info(`${clin_first_name} ${clin_last_name} has arrived!`);
-      } else if (message.type === "clin.on.way") {
-        dispatchPatientActiveApts({
-          type: "ADD_APPOINTMENT",
-          payload: message.data,
-        });
-        const {
-          clinician: { first_name: clin_first_name, last_name: clin_last_name },
-        } = message.data;
-        toast.info(`${clin_first_name} ${clin_last_name} is on there way!`);
-      } else if (message.type === "update.coords") {
-        dispatchPatientActiveApts({
-          type: "UPDATE_CLIN_COORDS",
-          payload: message.data,
-        });
-        console.log("working", message.data);
-      } else if (message.type === "chat.message.created") {
-        dispatchPatientChatMessages({
-          type: "ADD_MESSAGE",
-          payload: message.data,
-        });
-      } else if (message.type === "apt.requested.fail") {
-        toast.error(`${message.msg}`);
-      } else if (message.type === "apt.booked.msg") {
-        dispatchPatientActiveApts({
-          type: "ADD_APPOINTMENT",
-          payload: message.data,
-        });
-        const {
-          clinician: { first_name: clin_first_name, last_name: clin_last_name },
-        } = message.data;
-        toast.info(
-          `Your appointment has been accepted by ${clin_first_name} ${clin_last_name}`
-        );
+      console.log("message type", message.type);
+      switch (message.type) {
+        case "apt.requested.success": {
+          toast.success("Your Appointment has been requested");
+          break;
+        }
+        case "patient.canceled": {
+          dispatchPatientActiveApts({
+            type: "ADD_APPOINTMENT",
+            payload: message.data,
+          });
+          toast.success(`Appointment successfully canceled`);
+          break;
+        }
+        case "clin.complete.update": {
+          dispatchPatientActiveApts({
+            type: "ADD_APPOINTMENT",
+            payload: message.data,
+          });
+          break;
+        }
+        case "clin.arrival.update": {
+          dispatchPatientActiveApts({
+            type: "ADD_APPOINTMENT",
+            payload: message.data,
+          });
+          const {
+            clinician: {
+              first_name: clin_first_name,
+              last_name: clin_last_name,
+            },
+          } = message.data;
+          toast.info(`${clin_first_name} ${clin_last_name} has arrived!`);
+          break;
+        }
+        case "clin.on.way": {
+          dispatchPatientActiveApts({
+            type: "ADD_APPOINTMENT",
+            payload: message.data,
+          });
+          const {
+            clinician: {
+              first_name: clin_first_name,
+              last_name: clin_last_name,
+            },
+          } = message.data;
+          toast.info(`${clin_first_name} ${clin_last_name} is on there way!`);
+          break;
+        }
+        case "update.coords": {
+          dispatchPatientActiveApts({
+            type: "UPDATE_CLIN_COORDS",
+            payload: message.data,
+          });
+          break;
+        }
+        case "chat.message.created": {
+          dispatchPatientChatMessages({
+            type: "ADD_MESSAGE",
+            payload: message.data,
+          });
+          break;
+        }
+        case "apt.requested.fail": {
+          toast.error(`${message.msg}`);
+          break;
+        }
+        case "apt.booked.msg": {
+          dispatchPatientActiveApts({
+            type: "ADD_APPOINTMENT",
+            payload: message.data,
+          });
+          const {
+            clinician: {
+              first_name: clin_first_name,
+              last_name: clin_last_name,
+            },
+          } = message.data;
+          toast.info(
+            `Your appointment has been accepted by ${clin_first_name} ${clin_last_name}`
+          );
+          break;
+        }
+        default:
+          break;
       }
     });
     console.log("websocket connected");
