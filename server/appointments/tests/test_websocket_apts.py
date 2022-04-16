@@ -1,6 +1,5 @@
 from datetime import datetime, timedelta
 import json
-from urllib import response
 from django.conf import settings
 import pytest
 
@@ -41,6 +40,7 @@ TEST_CHANNEL_LAYERS = {
 
 USER = get_user_model()
 
+
 # database calls are synchronous - prevents blocking main event loop
 # opens thread to handle
 @database_sync_to_async
@@ -62,16 +62,18 @@ def create_appt(clinician, patient):
         length=60,
     )
 
+
 # mark sets metadata on all test methods in test class
 # also treat tests as coroutines
 @pytest.mark.asyncio
 @pytest.mark.django_db(transaction=True)
 class TestWebSocket:
-    
-    async def test_schedule_appointment(self, settings):
-        settings.CHANNEL_LAYERS = TEST_CHANNEL_LAYERS
+
+    settings.CHANNEL_LAYERS = TEST_CHANNEL_LAYERS
+
+    async def test_schedule_appointment(self):
         patient, access = await create_user('patient', **default_patient_create_data)
-        clinician, _  = await create_user('clinician', **default_clinician_create_data)
+        clinician, _ = await create_user('clinician', **default_clinician_create_data)
 
         communicator = WebsocketCommunicator(
             application=application,
@@ -84,11 +86,11 @@ class TestWebSocket:
             'start_time': datetime.now() + timedelta(days=7),
             'length': 60,
         }, cls=DjangoJSONEncoder)
-        
+
         connected, _ = await communicator.connect()
         await communicator.send_json_to({
             'type': 'schedule.appointment',
-            'data': json.loads(data), #back to dictionary (dumb)
+            'data': json.loads(data),  # back to dictionary
         })
         response = await communicator.receive_json_from()
         response_data = response.get('data')
@@ -96,12 +98,10 @@ class TestWebSocket:
         assert response_data['clinician']['email'] == default_clinician_create_data['email']
         assert response_data['patient']['email'] == default_patient_create_data['email']
         assert response_data['status'] == 'REQUESTED'
-   
+
         await communicator.disconnect()
 
-    
-    async def test_clinician_alerted_on_appt_schedule(self, settings):
-        settings.CHANNEL_LAYERS = TEST_CHANNEL_LAYERS
+    async def test_clinician_alerted_on_appt_schedule(self):
         patient, access = await create_user('patient', **default_patient_create_data)
         clinician, _  = await create_user('clinician', **default_clinician_create_data)
 
@@ -111,7 +111,7 @@ class TestWebSocket:
             group='clinicians',
             channel='test_channel'
         )
-        
+
         # schedule appointment as patient
         communicator = WebsocketCommunicator(
             application=application,
@@ -124,16 +124,16 @@ class TestWebSocket:
             'start_time': datetime.now() + timedelta(days=7),
             'length': 60,
         }, cls=DjangoJSONEncoder)
-        
+
         connected, _ = await communicator.connect()
         await communicator.send_json_to({
             'type': 'schedule.appointment',
-            'data': json.loads(data), #back to dictionary (dumb)
+            'data': json.loads(data),  # back to dictionary (dumb)
         })
 
         # monitor for broadcast message as clinician
-        response = await channel_layer.receive('test_channel')
-        response_data = response.get('data')
+        res = await channel_layer.receive('test_channel')
+        response_data = res.get('data')
 
         assert response_data['id'] is not None
         assert response_data['clinician']['email'] == default_clinician_create_data['email']
@@ -142,11 +142,9 @@ class TestWebSocket:
 
         await communicator.disconnect()
 
-
-    async def test_create_appt_group(self, settings):
+    async def test_create_appt_group(self):
 
         # create appt
-        settings.CHANNEL_LAYERS = TEST_CHANNEL_LAYERS
         patient, access = await create_user('patient', **default_patient_create_data)
         clinician, _ = await create_user('clinician', **default_clinician_create_data)
         appt = await create_appt(clinician, patient)
@@ -172,11 +170,10 @@ class TestWebSocket:
         assert resp == message
 
         await communicator.disconnect()
-    
-    async def test_clin_can_update_patient(self, settings):
+
+    async def test_clin_can_update_patient(self):
 
         # create appt
-        settings.CHANNEL_LAYERS = TEST_CHANNEL_LAYERS
         patient, access = await create_user('patient', **default_patient_create_data)
         clinician, clin_access = await create_user('clinician', **default_clinician_create_data)
         appt = await create_appt(clinician, patient)

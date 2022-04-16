@@ -277,10 +277,6 @@ class AppointmentConsumer(AsyncJsonWebsocketConsumer):
             'data': appt_data,
         })
 
-    async def search_clinicians(self):
-        clinicians = await self._get_available_clinicians()
-        await self.send_json(clinicians)
-
     async def update_appointment(self, content, **kwargs):
         data = content.get('data')
         updated_appt = await self._update_appointment(data)
@@ -394,18 +390,17 @@ class AppointmentConsumer(AsyncJsonWebsocketConsumer):
     def _message_type_mapper(self, message_type, content):
         # helper for processing
         mapper = {
-            'schedule.appointment': self.schedule_appointment(content),
-            'create.apt': self.create_apt(content),
-            'clin.book.apt': self.clin_book_apt(content),
-            'get.clinicians': self.search_clinicians(),
-            'update.appointment': self.update_appointment(content),
-            'echo.message': self.echo_message(content),
-            'create.new_chat_msg': self.create_new_chat_msg(content),
-            'update.coords': self.update_apt_coords(content),
-            'clin.begin.nav': self.clin_begin_nav(content),
-            'clin.arrived': self.clin_arrived(content),
-            'clin.apt.complete': self.clin_complete(content),
-            'patient.apt.cancel': self.cancel_apt(content)
+            'schedule.appointment': self.schedule_appointment,
+            'create.apt': self.create_apt,
+            'clin.book.apt': self.clin_book_apt,
+            'update.appointment': self.update_appointment,
+            'echo.message': self.echo_message,
+            'create.new_chat_msg': self.create_new_chat_msg,
+            'update.coords': self.update_apt_coords,
+            'clin.begin.nav': self.clin_begin_nav,
+            'clin.arrived': self.clin_arrived,
+            'clin.apt.complete': self.clin_complete,
+            'patient.apt.cancel': self.cancel_apt
         }
 
-        return mapper[message_type]
+        return mapper[message_type](content)
