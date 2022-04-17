@@ -32,17 +32,13 @@ of certain skills within other projects.
 You'll need to place a google maps api key in a frontend .env file
 
 ```
-
 docker-compose up
-
 
 ```
 
 To run the initial migration
 
 ```
-
 docker exec hh-server python manage.py migrate
-
 
 ```
