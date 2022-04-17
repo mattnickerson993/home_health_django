@@ -7,16 +7,13 @@ import {
   Menu,
   MenuItem,
   Toolbar,
-  Tooltip,
   Typography,
 } from "@mui/material";
 import React from "react";
 import MenuIcon from "@mui/icons-material/Menu";
-import InfoIcon from "@mui/icons-material/Info";
-import ArchiveIcon from "@mui/icons-material/Archive";
 import { AuthContext } from "../context";
 import { Navigate } from "react-router-dom";
-import { styled, useTheme } from "@mui/material/styles";
+import { styled } from "@mui/material/styles";
 import MuiAppBar from "@mui/material/AppBar";
 import ChevronRight from "@mui/icons-material/ChevronRight";
 
@@ -44,7 +41,6 @@ const Navbar = ({ auth, open, handleOpen }) => {
   const [anchorEl, setAnchorEl] = React.useState(null);
   const { dispatch } = React.useContext(AuthContext);
   const [loggedIn, setLoggedIn] = React.useState(auth ? true : false);
-  const theme = useTheme();
   const handleClick = (event) => {
     setAnchorEl(event.currentTarget);
   };
@@ -52,9 +48,7 @@ const Navbar = ({ auth, open, handleOpen }) => {
   const handleClose = () => {
     setAnchorEl(null);
   };
-  function handleDropMenuClick(path) {
-    return;
-  }
+
   function handlelogout() {
     dispatch({
       type: "LOGOUT",
@@ -91,7 +85,6 @@ const Navbar = ({ auth, open, handleOpen }) => {
               ...(open && { display: "none" }),
             }}
           >
-            {/* <MenuIcon /> */}
             <ChevronRight />
           </IconButton>
 
@@ -100,7 +93,7 @@ const Navbar = ({ auth, open, handleOpen }) => {
           </Typography>
           <Hidden only={["xs", "sm"]}>
             <Typography variant="h6" sx={{ marginLeft: "1em" }}>
-              • Questions Answered | Patient Satisfied
+              • Same Treatment | From Your Home
             </Typography>
           </Hidden>
         </div>
@@ -137,26 +130,6 @@ const Navbar = ({ auth, open, handleOpen }) => {
                     justifyContent: "center",
                   },
                 }}
-                onClick={() => handleDropMenuClick("/about/")}
-              >
-                About
-              </MenuItem>
-              <MenuItem
-                sx={{
-                  root: {
-                    justifyContent: "center",
-                  },
-                }}
-                onClick={() => handleDropMenuClick("/archive/")}
-              >
-                Archive
-              </MenuItem>
-              <MenuItem
-                sx={{
-                  root: {
-                    justifyContent: "center",
-                  },
-                }}
                 onClick={handlelogout}
               >
                 Logout
@@ -164,19 +137,6 @@ const Navbar = ({ auth, open, handleOpen }) => {
             </Menu>
           </Hidden>
           <Hidden only={"xs"}>
-            <Tooltip title="About">
-              <IconButton onClick={() => console.log("complete me")}>
-                <InfoIcon />
-              </IconButton>
-            </Tooltip>
-            <Tooltip title="View Archives">
-              <IconButton
-                sx={{ marginRight: "1em" }}
-                onClick={() => console.log("complete me")}
-              >
-                <ArchiveIcon />
-              </IconButton>
-            </Tooltip>
             {auth ? (
               <Button
                 variant="contained"

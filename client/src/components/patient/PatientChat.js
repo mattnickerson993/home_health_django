@@ -7,13 +7,13 @@ import { Chat } from "@mui/icons-material";
 import { ChatMessageContext, PatientAptContext } from "../../context";
 import { sendNewChatMsg } from "../../services/AptService";
 import PatientChatMessage from "./PatientChatMsg";
+import SEO from "../Seo";
 
 const PatientChat = () => {
   const [newMessage, setNewMessage] = React.useState("");
   // handles previous and current messages
   const {
     patientChatMessages: { chatMessages },
-    dispatchPatientChatMessages,
   } = React.useContext(ChatMessageContext);
 
   const {
@@ -57,9 +57,12 @@ const PatientChat = () => {
   if (!apt_id) {
     return (
       <>
+        <SEO title="Chat" />
         <Box>
-          Looks like you don't have an active appointment. Check back to chat
-          when you do!
+          <Typography variant="h6">
+            Looks like you don't have an active appointment. Check back to chat
+            when you do!
+          </Typography>
         </Box>
       </>
     );
@@ -117,6 +120,11 @@ const PatientChat = () => {
                 id="outlined-message"
                 label="Message"
                 fullWidth
+                onKeyPress={(e) => {
+                  if (e.key === "Enter") {
+                    handleSubmit(newMessage);
+                  }
+                }}
               />
             </Grid>
             <Grid xs={1} align="right">

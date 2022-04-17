@@ -1,8 +1,6 @@
 import * as React from "react";
 import Card from "@mui/material/Card";
-import CardActions from "@mui/material/CardActions";
 import CardContent from "@mui/material/CardContent";
-import Button from "@mui/material/Button";
 import Typography from "@mui/material/Typography";
 
 export default function PatientDistanceCard({ miles, duration }) {
@@ -19,9 +17,6 @@ export default function PatientDistanceCard({ miles, duration }) {
           {`Estimated arrival: ${duration} from now`}
         </Typography>
       </CardContent>
-      <CardActions>
-        <Button size="small">Mark as Arrived</Button>
-      </CardActions>
     </Card>
   );
 }

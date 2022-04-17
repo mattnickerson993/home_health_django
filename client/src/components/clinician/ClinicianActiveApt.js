@@ -1,4 +1,4 @@
-import { Button, CircularProgress } from "@mui/material";
+import { Button, CircularProgress, Typography } from "@mui/material";
 import { Box } from "@mui/system";
 import React from "react";
 import { ClinicianAptContext } from "../../context";
@@ -7,6 +7,7 @@ import {
   clinBeginNav,
   clinComplete,
 } from "../../services/AptService";
+import SEO from "../Seo";
 import ClinMap from "./ClinMap";
 
 const ClinicianActiveApts = () => {
@@ -87,15 +88,19 @@ const ClinicianActiveApts = () => {
   if (!schedAptsPresent && !arrivedAptsPresent && !displayMap) {
     return (
       <>
+        <SEO title="Active Appointments" />
         <Box>
-          Looks like you don't have any active appointments. Check back when you
-          do!
+          <Typography variant="h6">
+            Looks like you don't have any active appointments. Check back when
+            you do!
+          </Typography>
         </Box>
       </>
     );
   } else if (schedAptsPresent && !displayMap) {
     return (
       <>
+        <SEO title="Active Appointments" />
         <Box
           sx={{
             display: "flex",
@@ -111,6 +116,7 @@ const ClinicianActiveApts = () => {
   } else if (arrivedAptsPresent && !displayMap) {
     return (
       <>
+        <SEO title="Active Appointments" />
         <Box
           sx={{
             display: "flex",
@@ -127,6 +133,7 @@ const ClinicianActiveApts = () => {
   }
   return (
     <>
+      <SEO title="Active Appointments" />
       {locationLoaded ? (
         <ClinMap
           apt_id={apt_id}

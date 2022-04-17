@@ -130,7 +130,7 @@ class AppointmentConsumer(AsyncJsonWebsocketConsumer):
     async def cancel_apt(self, content, **kwargs):
         # apt marked canceled by patient
         data = content.get('data')
-        data.update({'canceled_at': datetime.now()})
+        data.update({'canceled_at': datetime.now(), 'started_time': datetime.now()})
         updated_appt = await self._update_appointment(data)
         appt_data = await self._get_appointment_data(updated_appt)
 

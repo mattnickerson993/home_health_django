@@ -7,6 +7,7 @@ import { Chat } from "@mui/icons-material";
 import { ChatMessageContext, ClinicianAptContext } from "../../context";
 import { sendNewChatMsg } from "../../services/AptService";
 import ChatMessage from "./ChatMessage";
+import SEO from "../Seo";
 
 const ClinChat = () => {
   const [newMessage, setNewMessage] = React.useState("");
@@ -54,15 +55,19 @@ const ClinChat = () => {
   if (!apt_id) {
     return (
       <>
+        <SEO title="Chat" />
         <Box>
-          Looks like you don't have an active appointment. Check back to chat
-          when you do!
+          <Typography variant="h6">
+            Looks like you don't have an active appointment. Check back to chat
+            when you do!
+          </Typography>
         </Box>
       </>
     );
   }
   return (
     <>
+      <SEO title="Chat" />
       <Paper
         sx={{
           p: 2,
@@ -114,6 +119,11 @@ const ClinChat = () => {
                 id="outlined-message"
                 label="Message"
                 fullWidth
+                onKeyPress={(e) => {
+                  if (e.key === "Enter") {
+                    handleSubmit(newMessage);
+                  }
+                }}
               />
             </Grid>
             <Grid xs={1} align="right">

@@ -12,12 +12,14 @@ import { headers } from "../config/config";
 import { Link, Navigate } from "react-router-dom";
 import { AuthContext } from "../context";
 import { Card } from "@mui/material";
+import SEO from "../components/Seo";
 
 export default function LogIn() {
   const [loggedIn, setLoggedIn] = React.useState(false);
   const [loading, setLoading] = React.useState(false);
-  const { state, dispatch } = React.useContext(AuthContext);
+  const { dispatch } = React.useContext(AuthContext);
   const handleSubmit = async (event) => {
+    setLoading(true);
     event.preventDefault();
     const data = new FormData(event.currentTarget);
 
@@ -32,7 +34,6 @@ export default function LogIn() {
     console.log(res, res.status);
 
     if (res.status !== 200) {
-      console.log("error");
       setLoading(false);
       return;
     }
@@ -40,6 +41,7 @@ export default function LogIn() {
       type: "LOGIN_SUCCESS",
       payload: res.data,
     });
+    setLoading(false);
     setLoggedIn(true);
   };
 
@@ -49,6 +51,7 @@ export default function LogIn() {
 
   return (
     <>
+      <SEO title="login" />
       <Container component="main" maxWidth="xs">
         <Box
           sx={{
@@ -95,38 +98,39 @@ export default function LogIn() {
               fullWidth
               variant="contained"
               sx={{ mt: 3, mb: 2 }}
+              disabled={loading}
             >
               Sign In
             </Button>
-          </Box>
-          <Card
-            sx={{
-              display: "flex",
-              flexDirection: "column",
-              minHeight: 100,
-              alignItems: "center",
-              justifyContent: "center",
-              minWidth: 345,
-            }}
-          >
-            <Typography
+            <Card
               sx={{
-                margin: (theme) => theme.spacing(1),
-                textDecoration: "none",
+                display: "flex",
+                flexDirection: "column",
+                minHeight: 100,
+                alignItems: "center",
+                justifyContent: "center",
+                minWidth: 345,
               }}
-              variant="body2"
             >
-              Need an account?
-            </Typography>
-            <Link
-              styles={{
-                textDecoration: "none",
-              }}
-              to="/register"
-            >
-              <Button color="primary">Register</Button>
-            </Link>
-          </Card>
+              <Typography
+                sx={{
+                  margin: (theme) => theme.spacing(1),
+                  textDecoration: "none",
+                }}
+                variant="body2"
+              >
+                Need an account?
+              </Typography>
+              <Link
+                styles={{
+                  textDecoration: "none",
+                }}
+                to="/register"
+              >
+                <Button color="primary">Register</Button>
+              </Link>
+            </Card>
+          </Box>
         </Box>
       </Container>
     </>

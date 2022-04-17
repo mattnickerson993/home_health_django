@@ -3,6 +3,7 @@ import { Box } from "@mui/system";
 import React from "react";
 import { PatientAptContext } from "../../context";
 import { cancelApt } from "../../services/AptService";
+import SEO from "../Seo";
 import PatientMap from "./PatientMap";
 
 const PatientActApts = () => {
@@ -54,9 +55,12 @@ const PatientActApts = () => {
   if (schedAptsPresent) {
     return (
       <>
+        <SEO title="Active Appointments" />
         <Box>
-          Your Clinician is not in route yet. You'll be notified once they are
-          on there way!
+          <Typography variant="h6">
+            Your Clinician is not in route yet. You'll be notified once they are
+            on there way!
+          </Typography>
         </Box>
         <Button onClick={() => handleCancel(apt_id)}>Cancel Appointment</Button>
       </>
@@ -64,17 +68,23 @@ const PatientActApts = () => {
   } else if (arrivedAptsPresent) {
     return (
       <>
+        <SEO title="Active Appointments" />
         <Box>
-          Your Clinician has arrived and your appointment is now in progress
+          <Typography variant="h6">
+            Your Clinician has arrived and your appointment is now in progress
+          </Typography>
         </Box>
       </>
     );
   } else if (!aptsPresent) {
     return (
       <>
+        <SEO title="Active Appointments" />
         <Box>
-          Looks like you dont have any active appointments now. Check back when
-          you do!
+          <Typography variant="h6">
+            Looks like you dont have any active appointments now. Check back
+            when you do!
+          </Typography>
         </Box>
       </>
     );
@@ -83,6 +93,7 @@ const PatientActApts = () => {
     <>
       {locationLoaded ? (
         <Box>
+          <SEO title="Active Appointments" />
           <PatientMap
             updateDirections={updateDirections}
             setUpdateDirections={setUpdateDirections}

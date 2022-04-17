@@ -15,15 +15,13 @@ import {
 } from "@mui/material";
 
 import TablePaginationActions from "../TablePaginationActions";
+import SEO from "../Seo";
 
 const PastAptsTable = ({ apts }) => {
-  const [open, setOpen] = React.useState(false);
-  const [idTracker, setIdTracker] = React.useState(0);
-
   // styles and theme
   // sorting
   const [order, setOrder] = React.useState("asc");
-  const [orderBy, setOrderBy] = React.useState("last_name");
+  const [orderBy, setOrderBy] = React.useState("start_time");
   // pagination
   const [page, setPage] = React.useState(0);
   const [rowsPerPage, setRowsPerPage] = React.useState(5);
@@ -77,9 +75,9 @@ const PastAptsTable = ({ apts }) => {
     setRowsPerPage(parseInt(event.target.value, 10));
     setPage(0);
   };
-
   return (
     <>
+      <SEO title="Past Appointments" />
       {apts && (
         <>
           <TableContainer component={Paper}>
@@ -104,24 +102,8 @@ const PastAptsTable = ({ apts }) => {
                 sx={{ backgroundColor: (theme) => theme.palette.primary.main }}
               >
                 <TableRow hover>
-                  <TableCell>
-                    <TableSortLabel
-                      active={orderBy === "last_name"}
-                      direction={orderBy === "last_name" ? order : "asc"}
-                      onClick={createSortHandler("last_name")}
-                    >
-                      Patient Name
-                    </TableSortLabel>
-                  </TableCell>
-                  <TableCell>
-                    <TableSortLabel
-                      active={orderBy === "email"}
-                      direction={orderBy === "email" ? order : "asc"}
-                      onClick={createSortHandler("email")}
-                    >
-                      Email
-                    </TableSortLabel>
-                  </TableCell>
+                  <TableCell>Patient Name</TableCell>
+                  <TableCell>Email</TableCell>
                   <TableCell>
                     <TableSortLabel
                       active={orderBy === "start_time"}

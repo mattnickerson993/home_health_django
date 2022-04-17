@@ -22,6 +22,7 @@ import {
 } from "@mui/material";
 import { headers } from "../config/config";
 import { errorIcon, validIcon } from "../components/Icons";
+import { Message } from "../components/Message";
 
 const SignUp = () => {
   const [loading, setLoading] = React.useState(false);
@@ -35,7 +36,6 @@ const SignUp = () => {
   } = useForm({ mode: "onBlur" });
 
   async function onSubmit(data) {
-    console.log("data", data);
     setLoading(true);
     setError("");
     const {
@@ -63,13 +63,20 @@ const SignUp = () => {
 
       const res = await axios.post(api.auth.register, formData, headers);
       if (res.status !== 201) {
-        console.log("response", res, res.status);
         setLoading(false);
         return;
       }
       setAccountCreated(true);
     } catch (err) {
-      setError("Sorry, there was an error signing up");
+      let message;
+      if (err.response.data.email) {
+        message = err.response.data.email.map((item) => item).join("");
+      } else if (err.response.data.password) {
+        message = err.response.data.password.map((item) => item).join("");
+      } else {
+        message = err.response.statusText;
+      }
+      setError(message);
       setLoading(false);
     }
   }
@@ -180,40 +187,22 @@ const SignUp = () => {
                     </FormControl>
                   )}
                 />
-                <input
-                  name="photo"
-                  type="file"
-                  {...register("photo", {
-                    required: true,
-                  })}
-                />
-                {/* <Controller
-                  name="photo"
-                  control={control}
-                  rules={{ required: true }}
-                  defaultValue=""
-                  render={({ field }) => (
-                    <label htmlFor="photo">
-                      <input
-                        {...field}
-                        type="file"
-                        id="photo"
-                        style={{ display: "none" }}
-                        name="photo"
-                      />
-                      <Fab
-                        color="secondary"
-                        size="small"
-                        aria-label="add"
-                        component="span"
-                        variant="extended"
-                        sx={{ margin: (theme) => theme.spacing(2) }}
-                      >
-                        <AddIcon /> Upload Photo
-                      </Fab>
-                    </label>
-                  )}
-                ></Controller> */}
+                <Fab
+                  color="secondary"
+                  size="small"
+                  aria-label="add"
+                  component="span"
+                  variant="extended"
+                  sx={{ margin: (theme) => theme.spacing(3) }}
+                >
+                  <input
+                    name="photo"
+                    type="file"
+                    {...register("photo", {
+                      required: true,
+                    })}
+                  />
+                </Fab>
 
                 <TextField
                   name="password"
@@ -262,8 +251,11 @@ const SignUp = () => {
                   Sign up
                 </Button>
               </form>
-              {/* {error && <ErrorMessage variant="outlined" severity="error" message={error} />}
-                    {state.errorMessage &&  <ErrorMessage variant="outlined" severity="error" message={state.errorMessage}/> } */}
+              {error && (
+                <Box sx={{ marginTop: (theme) => theme.spacing(2) }}>
+                  <Message severity={"error"} message={error} />
+                </Box>
+              )}
             </CardContent>
           </Card>
           <Card

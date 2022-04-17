@@ -15,15 +15,13 @@ import {
 } from "@mui/material";
 
 import TablePaginationActions from "../TablePaginationActions";
+import SEO from "../Seo";
 
 const PatientPastAptsTable = ({ apts }) => {
-  const [open, setOpen] = React.useState(false);
-  const [idTracker, setIdTracker] = React.useState(0);
-
   // styles and theme
   // sorting
   const [order, setOrder] = React.useState("asc");
-  const [orderBy, setOrderBy] = React.useState("last_name");
+  const [orderBy, setOrderBy] = React.useState("start_time");
   // pagination
   const [page, setPage] = React.useState(0);
   const [rowsPerPage, setRowsPerPage] = React.useState(5);
@@ -79,6 +77,7 @@ const PatientPastAptsTable = ({ apts }) => {
   };
   return (
     <>
+      <SEO title="Past Appointments" />
       {apts && (
         <>
           <TableContainer component={Paper}>
@@ -103,24 +102,8 @@ const PatientPastAptsTable = ({ apts }) => {
                 sx={{ backgroundColor: (theme) => theme.palette.primary.main }}
               >
                 <TableRow hover>
-                  <TableCell>
-                    <TableSortLabel
-                      active={orderBy === "last_name"}
-                      direction={orderBy === "last_name" ? order : "asc"}
-                      onClick={createSortHandler("last_name")}
-                    >
-                      Clinician Name
-                    </TableSortLabel>
-                  </TableCell>
-                  <TableCell>
-                    <TableSortLabel
-                      active={orderBy === "email"}
-                      direction={orderBy === "email" ? order : "asc"}
-                      onClick={createSortHandler("email")}
-                    >
-                      Email
-                    </TableSortLabel>
-                  </TableCell>
+                  <TableCell>Clinician Name</TableCell>
+                  <TableCell>Email</TableCell>
                   <TableCell>
                     <TableSortLabel
                       active={orderBy === "start_time"}
